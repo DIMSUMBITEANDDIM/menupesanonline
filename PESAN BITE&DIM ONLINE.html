@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Order Online - Bite & Dim</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  
+    <style>
+        /* Menyembunyikan judul halaman bawaan Blogger */
+        .post-title, .entry-title, h1.post-title, h1.entry-title {
+            display: none !important;
+        }
+        .hidden-layout { display: none !important; }
+
+        /* Efek Cahaya Putih di Samping Tulisan Hitam */
+        .efek-cahaya-putih {
+            color: #000000 !important;
+            text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #ffffff;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen text-black pb-36 lg:pb-0">
+
+    <!-- 🎯 HEADER SPANDUK BANNER (PENUH & RESPONSIF) -->
+    <div class="w-full bg-amber-500 shadow-xs overflow-hidden">
+        <img src="https://cdn.phototourl.com/free/2026-07-07-4497e897-0a15-456e-876f-86db9fe2a920.png" alt="Banner Bite & Dim" class="w-full h-auto object-cover block">
+    </div>
+
+    <div id="layout_utama" class="container mx-auto p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="lg:col-span-2 space-y-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <h2 class="text-base font-bold mb-3 border-b pb-1" style="color: #000000 !important;">🍽️ Pilih Menu Favoritmu:</h2>
+                <div id="loading_menu" class="text-center py-4 text-xs text-gray-500 font-medium">⏳ Memuat daftar menu segar...</div>
+                
+                <div id="notifikasi_toko_tutup" class="hidden bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl text-center font-bold text-xs sm:text-sm my-3">
+                    📢 Maaf, Bro! Semua menu hari ini sudah ludes terjual (Stok Habis). <br><span class="text-[11px] font-normal text-red-600">Pantau terus besok untuk restock menu terbaru!</span>
+                </div>
+
+                <div id="kontainer_kategori" class="space-y-3"></div>
+            </div>
+        </div>
+
+        <div class="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] border-t border-gray-200 z-50 rounded-t-2xl lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:bg-white lg:shadow-sm lg:border lg:border-gray-100 lg:rounded-xl lg:h-fit lg:sticky lg:top-2">
+            <h2 class="text-sm font-bold mb-2 border-b pb-1 hidden lg:block" style="color: #000000 !important;">🛒 Keranjang Belanja</h2>
+            
+            <div class="flex flex-col lg:block gap-2">
+                <div class="bg-gray-50 p-2 rounded-lg border border-gray-200">
+                    <div class="flex items-center lg:block gap-2">
+                        <label class="block text-[10px] font-bold text-black whitespace-nowrap lg:mb-1" style="color: #000000 !important;">Nama Anda:</label>
+                        <input type="text" id="pembeli_nama" placeholder="Masukkan nama (Wajib)" class="w-full border border-gray-300 p-1.5 rounded-md text-xs font-medium bg-white text-black focus:outline-amber-500">
+                    </div>
+                </div>
+
+                <div id="elemen_keranjang" class="space-y-1.5 max-h-[150px] lg:max-h-[150px] overflow-y-auto border-b pb-1 text-xs">
+                    <p class="text-gray-400 text-center text-[11px] py-1">Keranjang kosong, Bro.</p>
+                </div>
+
+                <div class="flex items-center justify-between lg:block mt-1 lg:mt-4">
+                    <div class="flex justify-between font-bold text-sm lg:text-base lg:mb-3 gap-2">
+                        <span class="text-gray-700 lg:text-black">Total:</span>
+                        <span id="total_belanja" style="color: #000000 !important;">Rp 0</span>
+                    </div>
+
+                    <button id="checkoutBtn" onclick="prosesOrderPelanggan()" style="color: #000000 !important;" class="w-1/2 lg:w-full bg-green-500 hover:bg-green-600 font-black py-2.5 lg:py-3 rounded-xl text-[11px] lg:text-xs shadow-sm cursor-pointer text-center flex items-center justify-center gap-1.5 transition active:scale-95">
+                        💬 PESAN VIA WA
+                    </button>
+                </div>
+            </div>
+            <p class="text-[9px] text-gray-400 text-center mt-1.5 hidden lg:block">Pesanan otomatis tercatat di sistem dan diteruskan ke WA Admin.</p>
+        </div>
+    </div>
+
+    <!-- 📥 NOTIFIKASI PENGINGAT DOWNLOAD APK (SELALU MUNCUL SAAT REFRESH / BUKA HALAMAN) -->
+    <div id="banner_download_app" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:right-6 sm:translate-x-0 w-[92%] sm:w-[480px] p-4 rounded-xl shadow-2xl z-50 border border-orange-600 flex flex-col items-center justify-between gap-3 animate-bounce" style="background-color: #ff6b35 !important;">
+        <div class="flex items-center gap-3 w-full">
+            <div class="bg-white/30 p-2.5 rounded-xl shrink-0 text-2xl flex items-center justify-center">
+                📲
+            </div>
+            <div class="min-w-0 flex-1">
+                <!-- Ukuran teks 25px tebal dengan efek cahaya putih -->
+                <h4 class="font-black efek-cahaya-putih leading-tight" style="font-size: 25px !important;">Bite & Dim APK</h4>
+                <p class="text-xs font-bold efek-cahaya-putih mt-1 leading-snug">Install aplikasi Android resmi agar order lebih stabil!</p>
+            </div>
+        </div>
+        <div class="flex items-center justify-end gap-3 w-full mt-1 pt-2 border-t border-white/20">
+            <!-- Tombol DOWNLOAD Ukuran 20 (text-xl) -->
+            <a href="https://drive.google.com/file/d/1rBOC0omGBK0NxWjnoLeXxZEcPyj_lcqR/view?usp=drive_link" onclick="tutupBannerDownload()" target="_blank" class="bg-slate-900 hover:bg-slate-800 text-white text-xl font-black px-6 py-2 rounded-xl cursor-pointer transition text-center block no-underline shadow-md">
+                DOWNLOAD
+            </a>
+            <!-- Tombol Close Sementara -->
+            <button onclick="tutupBannerDownload()" class="text-black hover:text-white font-black text-xl px-2 py-1 cursor-pointer transition">✕</button>
+        </div>
+    </div>
+
+    <script>
+        const nomorWhatsAppToko = "62887436033472"; 
+        const urlWebApp = "https://script.google.com/macros/s/AKfycbxijavfFwCPC4BrH2-hYpZIN2tJuhfN4hmLo9eGRxKCkVnPGZXPF8CtXIqrzsNGUtOqmA/exec";
+
+        let keranjang = [];
+        let totalBelanja = 0;
+        let menuDariSheets = [];
+        
+        let stokDapurGlobal = {
+            "DIMSUM_GLOBAL": 0,  
+            "TAHU_BAKSO": 0      
+        };
+
+        window.onload = function() {
+            muatDataMenuPelanggan();
+            cekStatusNotifikasiDownload();
+        };
+
+        function cekStatusNotifikasiDownload() {
+            // Memori pengunci dihapus, banner otomatis selalu muncul setelah 2 detik saat web dibuka
+            setTimeout(() => {
+                document.getElementById("banner_download_app").classList.remove("hidden");
+            }, 2000); 
+        }
+
+        function tutupBannerDownload() {
+            // Hanya menyembunyikan sementara tanpa menyimpan status kunci di browser
+            document.getElementById("banner_download_app").classList.add("hidden");
+        }
+
+        function muatDataMenuPelanggan() {
+            var menuLokal = localStorage.getItem("bdim_menu_lokal");
+            if (menuLokal) {
+                menuDariSheets = JSON.parse(menuLokal);
+                hitungUlangStokPcsDapur();
+                renderMenuGrouped();
+            }
+
+            fetch(urlWebApp)
+                .then(res => res.json())
+                .then(resData => {
+                    menuDariSheets = resData.menu;
+                    localStorage.setItem("bdim_menu_lokal", JSON.stringify(resData.menu));
+                    hitungUlangStokPcsDapur();
+                    renderMenuGrouped();
+                })
+                .catch(err => console.error("Gagal sinkron menu:", err));
+        }
+
+        /* [Fungsi logika aplikasi lainnya tetap dipertahankan penuh di bawah ini...] */
+        function hitungUlangStokPcsDapur() {
+            stokDapurGlobal = { "DIMSUM_GLOBAL": 0, "TAHU_BAKSO": 0 };
+            menuDariSheets.forEach(item => {
+                let namaLower = item.produk.toLowerCase();
+                let jenisBahan = namaLower.includes("tahu") ? "TAHU_BAKSO" : "DIMSUM_GLOBAL";
+                let stokPorsi = parseInt(item.stok) || 0;
+                let isiPcs = parseInt(item.isiPcs) || 1;
+                let totalPcsItemIni = stokPorsi * isiPcs;
+                if (totalPcsItemIni > stokDapurGlobal[jenisBahan]) {
+                    stokDapurGlobal[jenisBahan] = totalPcsItemIni;
+                }
+            });
+        }
+
+        function tambahQtyCard(idInput, isiPcs, jenisBahan) {
+            var inputElement = document.getElementById(idInput);
+            var qtySekarang = parseInt(inputElement.value) || 1;
+            let totalPcsDibutuhkan = (qtySekarang + 1) * isiPcs;
+            let pcsTersedia = stokDapurGlobal[jenisBahan] || 0;
+            if (totalPcsDibutuhkan <= pcsTersedia) {
+                inputElement.value = qtySekarang + 1;
+            } else {
+                let porsiMaks = Math.floor(pcsTersedia / isiPcs);
+                alert(`Stok dapur sisa sedikit, Bro! Untuk isi paket ini (${isiPcs} pcs), maksimal cuma bisa ditambah ke ${porsiMaks} porsi.`);
+            }
+        }
+
+        function kurangQtyCard(idInput) {
+            var inputElement = document.getElementById(idInput);
+            var qtySekarang = parseInt(inputElement.value) || 1;
+            if (qtySekarang > 1) { inputElement.value = qtySekarang - 1; }
+        }
+
+        function toggleKategori(idKategori, idPanah) {
+            const elemenCont = document.getElementById(idKategori);
+            const elemenPanah = document.getElementById(idPanah);
+            if (elemenCont.classList.contains('hidden')) {
+                elemenCont.classList.remove('hidden');
+                elemenPanah.innerText = '\u25BC';
+            } else {
+                elemenCont.classList.add('hidden');
+                elemenPanah.innerText = '\u25BA';
+            }
+        }
+
+        function renderMenuGrouped() {
+            document.getElementById("loading_menu").classList.add("hidden-layout");
+            let totalPcsDapur = stokDapurGlobal["DIMSUM_GLOBAL"] + stokDapurGlobal["TAHU_BAKSO"];
+            if (totalPcsDapur === 0 && keranjang.length === 0) {
+                document.getElementById("notifikasi_toko_tutup").classList.remove("hidden");
+            } else {
+                document.getElementById("notifikasi_toko_tutup").classList.add("hidden");
+            }
+
+            let kategoriMap = { "Dimsum Original": [], "Dimsum Mentai": [], "Dimsum Keju": [], "Dimsum Mix": [], "Tahu Bakso": [] };
+            menuDariSheets.forEach(item => {
+                let namaLower = item.produk.toLowerCase();
+                if (namaLower.includes("mentai")) kategoriMap["Dimsum Mentai"].push(item);
+                else if (namaLower.includes("keju")) kategoriMap["Dimsum Keju"].push(item);
+                else if (namaLower.includes("mix")) kategoriMap["Dimsum Mix"].push(item);
+                else if (namaLower.includes("tahu")) kategoriMap["Tahu Bakso"].push(item);
+                else kategoriMap["Dimsum Original"].push(item);
+            });
+
+            let html = "";
+            let counterId = 0;
+
+            for (let namaKat in kategoriMap) {
+                let items = kategoriMap[namaKat];
+                if (items.length === 0) continue;
+                counterId++;
+                let idKatBox = `kat_box_${counterId}`;
+                let idPanah = `panah_${counterId}`;
+                let warnaKat = "bg-amber-50 border-amber-200";
+                if(namaKat.includes("Mentai")) warnaKat = "bg-orange-50 border-orange-200";
+                else if(namaKat.includes("Keju")) warnaKat = "bg-yellow-50 border-yellow-200";
+                else if(namaKat.includes("Mix")) warnaKat = "bg-teal-50 border-teal-200";
+                else if(namaKat.includes("Tahu")) warnaKat = "bg-blue-50 border-blue-200";
+
+                let jenisBahan = namaKat.includes("Tahu") ? "TAHU_BAKSO" : "DIMSUM_GLOBAL";
+                let pcsTersediaDapur = stokDapurGlobal[jenisBahan] || 0;
+                let adaStokTersedia = items.some(item => {
+                    let isiPcs = parseInt(item.isiPcs) || 1;
+                    return Math.floor(pcsTersediaDapur / isiPcs) > 0;
+                });
+                
+                html += `
+                    <div class="border rounded-xl shadow-2xs overflow-hidden mb-3 ${warnaKat}">
+                        <button onclick="toggleKategori('${idKatBox}', '${idPanah}')" type="button" class="w-full flex justify-between items-center p-3 font-extrabold text-sm text-black cursor-pointer text-left select-none">
+                            <span>✨ ${namaKat} ${!adaStokTersedia ? '<span class="text-[10px] text-red-600 bg-red-100 px-1.5 py-0.5 rounded ml-1 font-bold">HABIS</span>' : ''}</span>
+                            <span id="${idPanah}" class="text-gray-600 text-xs">\u25BA</span>
+                        </button>
+                        <div id="${idKatBox}" class="p-3 pt-0 grid grid-cols-1 sm:grid-cols-3 gap-3 hidden">
+                `;
+
+                items.forEach((item, idx) => {
+                    let jenisPaket = item.produk.replace(namaKat, "").trim();
+                    if(jenisPaket === "") jenisPaket = item.produk;
+                    let idInputUnik = `qty_cust_${namaKat.replace(/\s+/g, '')}_${idx}`;
+                    let isiPcs = parseInt(item.isiPcs) || 1;
+                    let sisaPorsiLive = Math.floor(pcsTersediaDapur / isiPcs);
+                    let stokReady = sisaPorsiLive > 0;
+
+                    html += `
+                        <div class="bg-white border border-gray-200 rounded-lg p-2.5 flex flex-col justify-between shadow-2xs ${!stokReady ? 'opacity-65' : ''}">
+                            <div>
+                                <div class="flex justify-between items-start gap-1">
+                                    <span class="font-bold text-xs text-black block mb-0.5" style="color: #000000 !important;">${jenisPaket}</span>
+                                    ${!stokReady ? '<span class="text-[8px] bg-red-600 text-white font-black px-1 rounded uppercase shrink-0">Habis</span>' : `<span class="text-[9px] bg-green-100 text-green-700 font-bold px-1 rounded shrink-0">Sisa ${sisaPorsiLive} porsi</span>`}
+                                </div>
+                                <div class="flex justify-between items-center w-full mb-2">
+                                    <span class="text-[10px] text-gray-500 font-medium">${isiPcs} pcs</span>
+                                    <span class="font-extrabold text-xs text-black" style="color: #000000 !important;">Rp ${parseInt(item.harga).toLocaleString('id-ID')}</span>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5 mt-auto">
+                                ${stokReady ? `
+                                    <div class="flex items-center bg-gray-100 border border-gray-200 rounded-md overflow-hidden h-7">
+                                        <button onclick="kurangQtyCard('${idInputUnik}')" type="button" class="px-2.5 h-full text-gray-600 font-black hover:bg-gray-200 cursor-pointer text-xs">-</button>
+                                        <input type="number" id="${idInputUnik}" value="1" min="1" max="${sisaPorsiLive}" readonly class="w-full text-center font-bold bg-white text-xs text-black border-none focus:outline-hidden" style="color: #000000 !important;">
+                                        <button onclick="tambahQtyCard('${idInputUnik}', ${isiPcs}, '${jenisBahan}')" type="button" class="px-2.5 h-full text-gray-600 font-black hover:bg-gray-200 cursor-pointer text-xs">+</button>
+                                    </div>
+                                    <button onclick="tambahKeKeranjang('${item.produk}', '${idInputUnik}', ${isiPcs}, '${jenisBahan}')" type="button" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-[10px] py-1.5 rounded-md shadow-2xs cursor-pointer text-center block transition active:scale-95">
+                                        + KERANJANG
+                                    </button>
+                                ` : `
+                                    <div class="w-full bg-red-100 text-red-700 font-black text-[10px] py-2 rounded-md text-center border border-red-200 select-none">🚫 STOK HABIS</div>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+            }
+            document.getElementById("kontainer_kategori").innerHTML = html;
+        }
+
+        function tambahKeKeranjang(namaProduk, idInputQty, isiPcs, jenisBahan) {
+            var qtyDipilih = parseInt(document.getElementById(idInputQty).value) || 1;
+            let totalPcsDihabiskan = qtyDipilih * isiPcs;
+            let pcsTersediaSaatIni = stokDapurGlobal[jenisBahan] || 0;
+            if (totalPcsDihabiskan > pcsTersediaSaatIni) {
+                qtyDipilih = Math.floor(pcsTersediaSaatIni / isiPcs);
+                totalPcsDihabiskan = qtyDipilih * isiPcs;
+                alert("Waduh Bro, stok dapur sisa sedikit, jumlah otomatis disesuaikan!");
+            }
+            if (qtyDipilih <= 0) return;
+            stokDapurGlobal[jenisBahan] = pcsTersediaSaatIni - totalPcsDihabiskan;
+            let itemMenu = menuDariSheets.find(item => item.produk === namaProduk);
+            let indexKeranjang = keranjang.findIndex(item => item.produk === namaProduk);
+            if (indexKeranjang > -1) { keranjang[indexKeranjang].qty += qtyDipilih; } 
+            else { keranjang.push({ produk: namaProduk, harga: parseInt(itemMenu.harga), qty: qtyDipilih, isiPcs: isiPcs, bahanBaku: jenisBahan }); }
+            renderKeranjang(); renderMenuGrouped();
+        }
+
+        function hapusDariKeranjang(index) {
+            let itemHapus = keranjang[index];
+            stokDapurGlobal[itemHapus.bahanBaku] = (stokDapurGlobal[itemHapus.bahanBaku] || 0) + (itemHapus.qty * itemHapus.isiPcs);
+            keranjang.splice(index, 1);
+            renderKeranjang(); renderMenuGrouped();
+        }
+
+        function renderKeranjang() {
+            let html = ""; totalBelanja = 0;
+            if (keranjang.length === 0) { html = `<p class="text-gray-400 text-center text-[11px] py-2">Keranjang kosong, Bro.</p>`; } 
+            else {
+                keranjang.forEach((item, index) => {
+                    let sub = item.qty * item.harga; totalBelanja += sub;
+                    html += `
+                        <div class="flex justify-between items-center text-[11px] border-b pb-1">
+                            <div class="truncate max-w-[150px] sm:max-w-none">
+                                <span class="font-semibold text-gray-800 block truncate">${item.produk}</span>
+                                <span class="text-[10px] text-gray-500">${item.qty} x Rp ${item.harga.toLocaleString('id-ID')}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <span class="font-bold text-gray-800">Rp ${sub.toLocaleString('id-ID')}</span>
+                                <button onclick="hapusDariKeranjang(${index})" class="text-red-500 hover:text-red-700 font-bold text-[10px] cursor-pointer">❌</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById("elemen_keranjang").innerHTML = html;
+            document.getElementById("total_belanja").innerText = "Rp " + totalBelanja.toLocaleString('id-ID');
+        }
+
+        function prosesOrderPelanggan() {
+            if (keranjang.length === 0) { alert("Keranjang masih kosong, Bro!"); return; }
+            var nama = document.getElementById("pembeli_nama").value.trim();
+            if (nama === "") { alert("Mohon masukkan Nama Anda!"); return; }
+
+            var dataTransaksi = { pelanggan: nama + " (Online WA)", items: keranjang.map(item => ({ produk: item.produk, qty: item.qty, subtotal: item.qty * item.harga })) };
+            fetch(urlWebApp, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(dataTransaksi) }).catch(err => console.error(err));
+
+            var teksWA = `*Halo Admin BITE & DIM, Saya mau order!*\n-------------------------------------------\n*Nama Pelanggan:* ${nama}\n*Via:* Web Order Online\n-------------------------------------------\n\n*RINCIAN BELANJA:*\n`;
+            keranjang.forEach((item, index) => { teksWA += `${index + 1}. *${item.produk}* (${item.qty} Porsi)\n      Rp ${item.harga.toLocaleString('id-ID')} x ${item.qty} = *Rp ${(item.qty * item.harga).toLocaleString('id-ID')}*\n`; });
+            teksWA += `\n*TOTAL YANG DIBAYARKAN: Rp ${totalBelanja.toLocaleString('id-ID')}*\n-------------------------------------------\n[PENTING] \n          Pesanan akan diproses apabila sudah melakukan         pembayaran.\n\nMohon info nomor rekening / e-wallet untuk pembayarannya ya admin, Terima Kasih!`;
+
+            keranjang = []; renderKeranjang(); document.getElementById("pembeli_nama").value = "";
+            setTimeout(() => { window.location.href = `https://wa.me/${nomorWhatsAppToko}?text=${encodeURIComponent(teksWA)}`; }, 500);
+        }
+    </script>
+    <style>
+        /* SCRIPT PEMBERSIH BLOGGER */
+        #header-wrapper, .header-outer, #sidebar-wrapper, .sidebar-outer, 
+        #footer-wrapper, .footer-outer, .tabs-outer, .custom-sidebar,
+        .nav-header, .header-theme, .back-button, .back-link, #back-to-home,
+        .post-title, .entry-title, h1.post-title, h1.entry-title { display: none !important; }
+        body, html { background: #ffffff !important; padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; overflow-y: auto !important; }
+        .content-outer, .content-inner, .main-outer, .main-inner, .post-outer, .post-body, .entry-content, .post, #main, #content, .region-inner { width: 100% !important; max-width: 100% !important; padding: 0 !important; margin: 0 auto !important; float: none !important; display: block !important; border: none !important; }
+        div[class*="max-w-"] { max-width: 100% !important; width: 100% !important; margin-left: auto !important; margin-right: auto !important; }
+    </style>
+</body>
+</html>
