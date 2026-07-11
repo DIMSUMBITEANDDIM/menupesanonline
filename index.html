@@ -330,20 +330,36 @@
         }
 
         function prosesOrderPelanggan() {
-            if (keranjang.length === 0) { alert("Keranjang masih kosong, Bro!"); return; }
-            var nama = document.getElementById("pembeli_nama").value.trim();
-            if (nama === "") { alert("Mohon masukkan Nama Anda!"); return; }
+    if (keranjang.length === 0) { 
+        alert("Keranjang masih kosong, Bro!"); 
+        return; 
+    }
+    var nama = document.getElementById("pembeli_nama").value.trim();
+    if (nama === "") { 
+        alert("Mohon masukkan Nama Anda!"); 
+        return; 
+    }
 
-            var dataTransaksi = { pelanggan: nama + " (Online WA)", items: keranjang.map(item => ({ produk: item.produk, qty: item.qty, subtotal: item.qty * item.harga })) };
-            fetch(urlWebApp, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(dataTransaksi) }).catch(err => console.error(err));
+    // 🔥 TUGAS MENCATAT OTOMATIS (FETCH) SUDAH DIHAPUS DARI SINI 🔥
+    // Jadi data tidak akan pernah masuk ke Google Sheets secara gaib lagi.
 
-            var teksWA = `*Halo Admin BITE & DIM, Saya mau order!*\n-------------------------------------------\n*Nama Pelanggan:* ${nama}\n*Via:* Web Order Online\n-------------------------------------------\n\n*RINCIAN BELANJA:*\n`;
-            keranjang.forEach((item, index) => { teksWA += `${index + 1}. *${item.produk}* (${item.qty} Porsi)\n      Rp ${item.harga.toLocaleString('id-ID')} x ${item.qty} = *Rp ${(item.qty * item.harga).toLocaleString('id-ID')}*\n`; });
-            teksWA += `\n*TOTAL YANG DIBAYARKAN: Rp ${totalBelanja.toLocaleString('id-ID')}*\n-------------------------------------------\n[PENTING] \n          Pesanan akan diproses apabila sudah melakukan         pembayaran.\n\nMohon info nomor rekening / e-wallet untuk pembayarannya ya admin, Terima Kasih!`;
+    // 1. Susun format teks pesan untuk dikirim ke WhatsApp
+    var teksWA = `*Halo Admin BITE & DIM, Saya mau order!*\n-------------------------------------------\n*Nama Pelanggan:* ${nama}\n*Via:* Web Order Online\n-------------------------------------------\n\n*RINCIAN BELANJA:*\n`;
+    keranjang.forEach((item, index) => { 
+        teksWA += `${index + 1}. *${item.produk}* (${item.qty} Porsi)\n      Rp ${item.harga.toLocaleString('id-ID')} x ${item.qty} = *Rp ${(item.qty * item.harga).toLocaleString('id-ID')}*\n`; 
+    });
+    teksWA += `\n*TOTAL YANG DIBAYARKAN: Rp ${totalBelanja.toLocaleString('id-ID')}*\n-------------------------------------------\n[PENTING] \n          Pesanan akan diproses apabila sudah melakukan         pembayaran.\n\nMohon info nomor rekening / e-wallet untuk pembayarannya ya admin, Terima Kasih!`;
 
-            keranjang = []; renderKeranjang(); document.getElementById("pembeli_nama").value = "";
-            setTimeout(() => { window.location.href = `https://wa.me/${nomorWhatsAppToko}?text=${encodeURIComponent(teksWA)}`; }, 500);
-        }
+    // 2. Kosongkan keranjang di web setelah tombol diklik
+    keranjang = []; 
+    renderKeranjang(); 
+    document.getElementById("pembeli_nama").value = "";
+    
+    // 3. Alihkan pelanggan langsung ke WhatsApp Toko
+    setTimeout(() => { 
+        window.location.href = `https://wa.me/${nomorWhatsAppToko}?text=${encodeURIComponent(teksWA)}`; 
+    }, 500);
+}
     </script>
     <style>
         /* SCRIPT PEMBERSIH BLOGGER */
