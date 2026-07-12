@@ -92,23 +92,6 @@
             "TAHU_BAKSO": 0      
         };
 
-        window.onload = function() {
-            muatDataMenuPelanggan();
-            cekStatusNotifikasiDownload();
-        };
-
-        function cekStatusNotifikasiDownload() {
-            // Memori pengunci dihapus, banner otomatis selalu muncul setelah 2 detik saat web dibuka
-            setTimeout(() => {
-                document.getElementById("banner_download_app").classList.remove("hidden");
-            }, 2000); 
-        }
-
-        function tutupBannerDownload() {
-            // Hanya menyembunyikan sementara tanpa menyimpan status kunci di browser
-            document.getElementById("banner_download_app").classList.add("hidden");
-        }
-
         function muatDataMenuPelanggan() {
             var menuLokal = localStorage.getItem("bdim_menu_lokal");
             if (menuLokal) {
