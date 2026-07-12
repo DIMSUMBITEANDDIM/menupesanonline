@@ -1,7 +1,7 @@
 {
   "name": "Bite & Dim Menu",
   "short_name": "Bite&Dim",
-  "start_url": "/index.html",
+  "start_url": "/menupesanonline/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
