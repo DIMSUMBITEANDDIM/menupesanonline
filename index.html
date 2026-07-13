@@ -325,11 +325,19 @@
                 return; 
             }
 
-            var teksWA = `*Halo Admin BITE & DIM, Saya mau order!*\\n-------------------------------------------\\n*Nama Pelanggan:* ${nama}\\n*Via:* Web Order Online\\n-------------------------------------------\\n\\n*RINCIAN BELANJA:*\\n`;
+            var teksWA = `*Halo Admin BITE & DIM, Saya mau order!*\
+            -------------------------------------------\
+            *Nama Pelanggan:* ${nama}\\n*Via:* Web Order Online\
+            -------------------------------------------\
+            *RINCIAN BELANJA:*\`;
             keranjang.forEach((item, index) => { 
-                teksWA += `${index + 1}. *${item.produk}* (${item.qty} Porsi)\\n      Rp ${item.harga.toLocaleString('id-ID')} x ${item.qty} = *Rp ${(item.qty * item.harga).toLocaleString('id-ID')}*\\n`; 
+                teksWA += `${index + 1}. *${item.produk}* (${item.qty} Porsi)\
+                Rp ${item.harga.toLocaleString('id-ID')} x ${item.qty} = *Rp ${(item.qty * item.harga).toLocaleString('id-ID')}*\; 
             });
-            teksWA += `\\n*TOTAL YANG DIBAYARKAN: Rp ${totalBelanja.toLocaleString('id-ID')}*\\n-------------------------------------------\\n[PENTING] \\n          Pesanan akan diproses apabila sudah melakukan         pembayaran.\\n\\nMohon info nomor rekening / e-wallet untuk pembayarannya ya admin, Terima Kasih!`;
+            teksWA += `\*TOTAL YANG DIBAYARKAN: Rp ${totalBelanja.toLocaleString('id-ID')}*\\n-------------------------------------------\
+            [PENTING] \
+            Pesanan akan diproses apabila sudah melakukan pembayaran.\
+            Mohon info nomor rekening / e-wallet untuk pembayarannya ya admin, Terima Kasih!`;
 
             keranjang = []; 
             renderKeranjang(); 
