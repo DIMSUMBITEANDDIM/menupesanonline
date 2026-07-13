@@ -325,19 +325,28 @@
                 return; 
             }
 
-            var teksWA = `*Halo Admin BITE & DIM, Saya mau order!*\
-            -------------------------------------------\
-            *Nama Pelanggan:* ${nama}\\n*Via:* Web Order Online\
-            -------------------------------------------\
-            *RINCIAN BELANJA:*\`;
+            // Menggunakan template literals agar baris baru (\n) terkirim dengan benar ke WA
+            let teksWA = `*Halo Admin BITE & DIM, Saya mau order!*
+-------------------------------------------
+*Nama Pelanggan:* ${nama}
+*Via:* Web Order Online
+-------------------------------------------
+
+*RINCIAN BELANJA:*
+`;
+
             keranjang.forEach((item, index) => { 
-                teksWA += `${index + 1}. *${item.produk}* (${item.qty} Porsi)\
-                Rp ${item.harga.toLocaleString('id-ID')} x ${item.qty} = *Rp ${(item.qty * item.harga).toLocaleString('id-ID')}*\; 
+                teksWA += `${index + 1}. *${item.produk}* (${item.qty} Porsi)
+    Rp ${item.harga.toLocaleString('id-ID')} x ${item.qty} = *Rp ${(item.qty * item.harga).toLocaleString('id-ID')}*\n`; 
             });
-            teksWA += `\*TOTAL YANG DIBAYARKAN: Rp ${totalBelanja.toLocaleString('id-ID')}*\\n-------------------------------------------\
-            [PENTING] \
-            Pesanan akan diproses apabila sudah melakukan pembayaran.\
-            Mohon info nomor rekening / e-wallet untuk pembayarannya ya admin, Terima Kasih!`;
+
+            teksWA += `
+*TOTAL YANG DIBAYARKAN: Rp ${totalBelanja.toLocaleString('id-ID')}*
+-------------------------------------------
+*[PENTING]*
+Pesanan akan diproses apabila sudah melakukan pembayaran.
+
+Mohon info nomor rekening / e-wallet untuk pembayarannya ya admin, Terima Kasih!`;
 
             keranjang = []; 
             renderKeranjang(); 
@@ -347,7 +356,6 @@
                 window.location.href = `https://wa.me/${nomorWhatsAppToko}?text=${encodeURIComponent(teksWA)}`; 
             }, 500);
         }
-
         // Otomatis memicu pengambilan data saat halaman dibuka
         window.onload = function() {
             muatDataMenuPelanggan();
