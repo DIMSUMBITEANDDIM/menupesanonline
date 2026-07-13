@@ -325,38 +325,34 @@
                 return; 
             }
 
-            // Menggunakan template literals agar baris baru (\n) terkirim dengan benar ke WA
-            let teksWA = `*Halo Admin BITE & DIM, Saya mau order!*
--------------------------------------------
-*Nama Pelanggan:* ${nama}
-*Via:* Web Order Online
--------------------------------------------
-
-*RINCIAN BELANJA:*
-`;
+            // Memperbaiki format teks gabungan agar script tidak crash dan menu tetap muncul
+            let teksWA = "*Halo Admin BITE & DIM, Saya mau order!*\n" +
+                         "-------------------------------------------\n" +
+                         "*Nama Pelanggan:* " + nama + "\n" +
+                         "*Via:* Web Order Online\n" +
+                         "-------------------------------------------\n\n" +
+                         "*RINCIAN BELANJA:*\n";
 
             keranjang.forEach((item, index) => { 
-                teksWA += `${index + 1}. *${item.produk}* (${item.qty} Porsi)
-    Rp ${item.harga.toLocaleString('id-ID')} x ${item.qty} = *Rp ${(item.qty * item.harga).toLocaleString('id-ID')}*\n`; 
+                teksWA += (index + 1) + ". *" + item.produk + "* (" + item.qty + " Porsi)\n" +
+                          "    Rp " + item.harga.toLocaleString('id-ID') + " x " + item.qty + " = *Rp " + (item.qty * item.harga).toLocaleString('id-ID') + "*\n"; 
             });
 
-            teksWA += `
-*TOTAL YANG DIBAYARKAN: Rp ${totalBelanja.toLocaleString('id-ID')}*
--------------------------------------------
-*[PENTING]*
-Pesanan akan diproses apabila sudah melakukan pembayaran.
-
-Mohon info nomor rekening / e-wallet untuk pembayarannya ya admin, Terima Kasih!`;
+            teksWA += "\n*TOTAL YANG DIBAYARKAN: Rp " + totalBelanja.toLocaleString('id-ID') + "*\n" +
+                      "-------------------------------------------\n" +
+                      "*[PENTING]*\n" +
+                      "Pesanan akan diproses apabila sudah melakukan pembayaran.\n\n" +
+                      "Mohon info nomor rekening / e-wallet untuk pembayarannya ya admin, Terima Kasih!";
 
             keranjang = []; 
             renderKeranjang(); 
             document.getElementById("pembeli_nama").value = "";
             
             setTimeout(() => { 
-                window.location.href = `https://wa.me/${nomorWhatsAppToko}?text=${encodeURIComponent(teksWA)}`; 
+                window.location.href = "https://wa.me/" + nomorWhatsAppToko + "?text=" + encodeURIComponent(teksWA); 
             }, 500);
-        }
-        // Otomatis memicu pengambilan data saat halaman dibuka
+        }        // Otomatis memicu pengambilan data saat halaman dibuka
+        
         window.onload = function() {
             muatDataMenuPelanggan();
         };
