@@ -1,38 +1,36 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <link rel="manifest" href="manifest.json">
-    
-    <link rel="icon" type="image/png" href="Favicon.png">
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Menu & Pesan Online | Bite & Dim</title>
+    <title>Menu & Pesan Online | Dimsum Bite and Dim</title>
     <meta name="description" content="Nikmati varian dimsum lezat dan hangat dari Dimsum Bite and Dim. Lihat daftar menu lengkap dan pesan online dengan mudah di sini!">
     <meta name="keywords" content="dimsum bite and dim, pesan dimsum online, menu dimsum, dimsum terdekat">
     <meta name="author" content="Dimsum Bite and Dim">
 
-    <!-- 3. META TAG UNTUK MEDIA SOSIAL (Agar saat link dibagikan di WA/IG tampilannya bagus) -->
+    <!-- Canonical Tag untuk SEO Google Search Console -->
+    <link rel="canonical" href="https://dimsumbiteanddim.github.io/menupesanonline/" />
+
+    <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Menu & Pesan Online | Dimsum Bite and Dim">
     <meta property="og:description" content="Pesan dimsum favoritmu secara online sekarang. Praktis, cepat, dan lezat!">
     <meta property="og:image" content="https://dimsumbiteanddim.github.io/gambar-dimsum-kamu.jpg">
-    <meta property="og:url" content="https://dimsumbiteanddim.github.io/menypesanonline">
-    
-    <!-- Kode untuk favicon PNG Anda -->
-    <link rel="icon" type="image/png" href="Favicon.png">
-    
-    <!-- Ikon untuk iOS/Apple Pintasan -->
-    <link class="apple-touch-icon" sizes="180x180" href="Favicon.png">
+    <meta property="og:url" content="https://dimsumbiteanddim.github.io/menupesanonline/">
+    <meta property="og:type" content="website">
 
-    <!-- Tag Android/Chrome untuk mode web app standar -->
+    <!-- Favicon & PWA Icons -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="Favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="Favicon.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Bite & Dim">
-    
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  
+
     <style>
-        /* Menyembunyikan judul halaman bawaan Blogger */
+        /* Menyembunyikan judul halaman bawaan Blogger/CMS */
         .post-title, .entry-title, h1.post-title, h1.entry-title {
             display: none !important;
         }
@@ -43,30 +41,66 @@
             color: #000000 !important;
             text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #ffffff;
         }
+
+        /* Script Pembersih Layout Blogger */
+        #header-wrapper, .header-outer, #sidebar-wrapper, .sidebar-outer, 
+        #footer-wrapper, .footer-outer, .tabs-outer, .custom-sidebar,
+        .nav-header, .header-theme, .back-button, .back-link, #back-to-home { display: none !important; }
+        
+        body, html { 
+            background: #ffffff !important; 
+            padding: 0 !important; 
+            margin: 0 !important; 
+            width: 100% !important; 
+            max-width: 100% !important; 
+            overflow-x: hidden !important; 
+            overflow-y: auto !important; 
+        }
+        
+        .content-outer, .content-inner, .main-outer, .main-inner, .post-outer, .post-body, .entry-content, .post, #main, #content, .region-inner { 
+            width: 100% !important; 
+            max-width: 100% !important; 
+            padding: 0 !important; 
+            margin: 0 auto !important; 
+            float: none !important; 
+            display: block !important; 
+            border: none !important; 
+        }
+        
+        div[class*="max-w-"] { 
+            max-width: 100% !important; 
+            width: 100% !important; 
+            margin-left: auto !important; 
+            margin-right: auto !important; 
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans min-h-screen text-black pb-36 lg:pb-0">
 
-    <!-- 🎯 HEADER SPANDUK BANNER (PENUH & RESPONSIF) -->
+    <!-- HEADER SPANDUK BANNER -->
     <div class="w-full bg-amber-500 shadow-xs overflow-hidden">
         <img src="https://cdn.phototourl.com/free/2026-07-07-4497e897-0a15-456e-876f-86db9fe2a920.png" alt="Banner Bite & Dim" class="w-full h-auto object-cover block">
     </div>
 
-     <!-- Di bawah ini sudah ditambahkan pb-60 agar menu terakhir tidak tertutup keranjang di HP -->
+    <!-- KONTAINER UTAMA -->
     <div id="layout_utama" class="container mx-auto p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-3 gap-4 pb-40 lg:pb-0">
+        
+        <!-- KOLOM DAFTAR MENU -->
         <div class="lg:col-span-2 space-y-4">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <h2 class="text-base font-bold mb-3 border-b pb-1" style="color: #000000 !important;">🍽️ Pilih Menu Favoritmu:</h2>
                 <div id="loading_menu" class="text-center py-4 text-xs text-gray-500 font-medium">⏳ Memuat daftar menu segar...</div>
                 
                 <div id="notifikasi_toko_tutup" class="hidden bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl text-center font-bold text-xs sm:text-sm my-3">
-                    📢 Maaf, Bro! Semua menu hari ini sudah ludes terjual (Stok Habis). <br><span class="text-[11px] font-normal text-red-600">Pantau terus besok untuk restock menu terbaru!</span>
+                    📢 Maaf, Bro! Semua menu hari ini sudah ludes terjual (Stok Habis). <br>
+                    <span class="text-[11px] font-normal text-red-600">Pantau terus besok untuk restock menu terbaru!</span>
                 </div>
 
                 <div id="kontainer_kategori" class="space-y-3"></div>
             </div>
         </div>
 
+        <!-- KOLOM KERANJANG BELANJA -->
         <div class="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] border-t border-gray-200 z-50 rounded-t-2xl lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:bg-white lg:shadow-sm lg:border lg:border-gray-100 lg:rounded-xl lg:h-fit lg:sticky lg:top-2">
             <h2 class="text-sm font-bold mb-2 border-b pb-1 hidden lg:block" style="color: #000000 !important;">🛒 Keranjang Belanja</h2>
             
@@ -97,6 +131,7 @@
         </div>
     </div>
 
+    <!-- LOGIKA JAVASCRIPT -->
     <script>
         const nomorWhatsAppToko = "62887436033472"; 
         const urlWebApp = "https://script.google.com/macros/s/AKfycbxijavfFwCPC4BrH2-hYpZIN2tJuhfN4hmLo9eGRxKCkVnPGZXPF8CtXIqrzsNGUtOqmA/exec";
@@ -118,7 +153,6 @@
                 renderMenuGrouped();
             }
 
-            // Memperbaiki pemanggilan data agar stabil di mode PWA / terinstal
             fetch(urlWebApp, {
                 method: "GET",
                 mode: "cors",
@@ -299,7 +333,7 @@
         function hapusDariKeranjang(index) {
             let itemHapus = keranjang[index];
             stokDapurGlobal[itemHapus.bahanBaku] = (stokDapurGlobal[itemHapus.bahanBaku] || 0) + (itemHapus.qty * itemHapus.isiPcs);
-            text = keranjang.splice(index, 1);
+            keranjang.splice(index, 1);
             renderKeranjang(); renderMenuGrouped();
         }
 
@@ -338,7 +372,6 @@
                 return; 
             }
 
-            // Memperbaiki format teks gabungan agar script tidak crash dan menu tetap muncul
             let teksWA = "*Halo Admin BITE & DIM, Saya mau order!*\n" +
                          "-------------------------------------------\n" +
                          "*Nama Pelanggan:* " + nama + "\n" +
@@ -364,22 +397,11 @@
             setTimeout(() => { 
                 window.location.href = "https://wa.me/" + nomorWhatsAppToko + "?text=" + encodeURIComponent(teksWA); 
             }, 500);
-        }        // Otomatis memicu pengambilan data saat halaman dibuka
-        
+        }
+
         window.onload = function() {
             muatDataMenuPelanggan();
         };
     </script>
-    
-    <style>
-        /* SCRIPT PEMBERSIH BLOGGER */
-        #header-wrapper, .header-outer, #sidebar-wrapper, .sidebar-outer, 
-        #footer-wrapper, .footer-outer, .tabs-outer, .custom-sidebar,
-        .nav-header, .header-theme, .back-button, .back-link, #back-to-home,
-        .post-title, .entry-title, h1.post-title, h1.entry-title { display: none !important; }
-        body, html { background: #ffffff !important; padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; overflow-y: auto !important; }
-        .content-outer, .content-inner, .main-outer, .main-inner, .post-outer, .post-body, .entry-content, .post, #main, #content, .region-inner { width: 100% !important; max-width: 100% !important; padding: 0 !important; margin: 0 auto !important; float: none !important; display: block !important; border: none !important; }
-        div[class*="max-w-"] { max-width: 100% !important; width: 100% !important; margin-left: auto !important; margin-right: auto !important; }
-    </style>
 </body>
 </html>
