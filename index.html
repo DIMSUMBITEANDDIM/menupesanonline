@@ -8,6 +8,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        /* Menyembunyikan elemen bawaan platform Blogger / CMS jika dipakai */
         .post-title, .entry-title, h1.post-title, h1.entry-title,
         #header-wrapper, .header-outer, #sidebar-wrapper, .sidebar-outer, 
         #footer-wrapper, .footer-outer, .tabs-outer, .custom-sidebar { display: none !important; }
@@ -34,11 +36,12 @@
             <div id="kontainer_kartu_menu" class="space-y-4"></div>
         </div>
 
-        <!-- SISI KANAN: KERANJANG BELANJA -->
+        <!-- SISI KANAN: KERANJANG BELANJA (STICKY / FIXED MOBILE) -->
         <div class="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] border-t border-gray-200 z-40 rounded-t-2xl lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:bg-white lg:shadow-md lg:border lg:border-gray-200 lg:rounded-xl lg:h-fit lg:sticky lg:top-4">
             <h2 class="text-base font-black mb-3 border-b pb-2 hidden lg:block text-black">🛒 Keranjang Belanja</h2>
             
             <div class="flex flex-col lg:block gap-2">
+                <!-- Form Input Nama & Nomor WA Pemesan -->
                 <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 space-y-2">
                     <div>
                         <label class="block text-[11px] font-bold text-gray-700 mb-0.5">Nama Anda <span class="text-red-500">*</span></label>
@@ -50,10 +53,12 @@
                     </div>
                 </div>
 
+                <!-- Rincian Item Keranjang -->
                 <div id="elemen_keranjang" class="space-y-2 max-h-[160px] overflow-y-auto border-b pb-2 text-xs">
                     <p class="text-gray-400 text-center text-xs py-2">Keranjang masih kosong, Bro.</p>
                 </div>
 
+                <!-- Total & Tombol Checkout -->
                 <div class="flex items-center justify-between lg:block mt-2 lg:mt-4">
                     <div class="flex justify-between font-black text-sm lg:text-lg lg:mb-3 gap-2">
                         <span class="text-gray-700 lg:text-black">Total:</span>
@@ -68,7 +73,7 @@
         </div>
     </div>
 
-    <!-- 📢 MODAL NOTIFIKASI PESANAN BERHASIL (GANTI REDIRECT WA) -->
+    <!-- 📢 MODAL NOTIFIKASI PESANAN BERHASIL -->
     <div id="modal_sukses" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl transform transition-all">
             <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold">
@@ -80,7 +85,7 @@
             </div>
             <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 text-left text-xs space-y-1">
                 <p><span class="font-bold text-gray-600">Pemesan:</span> <span id="modal_nama" class="font-semibold text-gray-900"></span></p>
-                <p><span class="font-bold text-gray-600">No. HP:</span> <span id="modal_hp" class="font-semibold text-gray-900"></span></p>
+                <p><span class="font-bold text-gray-600">No. WA:</span> <span id="modal_hp" class="font-semibold text-gray-900"></span></p>
                 <p><span class="font-bold text-gray-600">Total Bayar:</span> <span id="modal_total" class="font-black text-amber-600"></span></p>
             </div>
             <button onclick="tutupModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer transition active:scale-95">
@@ -91,11 +96,13 @@
 
     <!-- 🧠 SCRIPT LOGIKA APLIKASI -->
     <script>
+        // TEMPELKAN URL WEB APP GOOGLE APPS SCRIPT HASIL DEPLOY DI SINI:
         const urlWebApp = "https://script.google.com/macros/s/AKfycbxijavfFwCPC4BrH2-hYpZIN2tJuhfN4hmLo9eGRxKCkVnPGZXPF8CtXIqrzsNGUtOqmA/exec";
 
         let keranjang = [];
         let totalBelanja = 0;
 
+        // Stok Default (Sel D5 & D6)
         let stokDapurPcs = {
             dimsum: 100,
             tahu: 100
@@ -332,7 +339,6 @@
             document.getElementById("total_belanja").innerText = "Rp " + totalBelanja.toLocaleString('id-ID');
         }
 
-        // PROSES ORDER TANPA REDIRECT WA
         function prosesOrderPelanggan() {
             if (keranjang.length === 0) {
                 alert("Keranjang masih kosong, Bro!");
@@ -352,10 +358,15 @@
                 return;
             }
 
-            // 1. Kirim payload ke Apps Script (Spreadsheet)
+            // Payload dikirim terpisah khusus untuk kolom A - H Spreadsheet
             let payload = {
-                pelanggan: `${nama} (${hp})`,
-                items: keranjang.map(i => ({ produk: i.nama, qty: i.qty, subtotal: i.qty * i.harga }))
+                namaPelanggan: nama,
+                nomorWA: hp,
+                items: keranjang.map(i => ({ 
+                    produk: i.nama, 
+                    qty: i.qty, 
+                    subtotal: i.qty * i.harga 
+                }))
             };
             
             fetch(urlWebApp, { 
@@ -364,15 +375,15 @@
                 body: JSON.stringify(payload) 
             }).catch(e => console.log("Gagal kirim data:", e));
 
-            // 2. Isi detail ke modal sukses
+            // Set data ke modal sukses
             document.getElementById("modal_nama").innerText = nama;
             document.getElementById("modal_hp").innerText = hp;
             document.getElementById("modal_total").innerText = "Rp " + totalBelanja.toLocaleString('id-ID');
 
-            // 3. Tampilkan modal notifikasi
+            // Tampilkan modal
             document.getElementById("modal_sukses").classList.remove("hidden");
 
-            // 4. Reset form & keranjang
+            // Reset form dan keranjang
             keranjang = [];
             renderKeranjang();
             document.getElementById("pembeli_nama").value = "";
