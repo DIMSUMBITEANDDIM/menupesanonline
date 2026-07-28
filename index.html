@@ -1,474 +1,227 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <link rel="manifest" href="manifest.json">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bite & Dim - Order Online</title>
-    
-    <link rel="icon" type="image/png" href="Favicon.png">
-    <link class="apple-touch-icon" sizes="180x180" href="Favicon.png">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Bite & Dim">
-    
-    <!-- Framework Tailwind CSS -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  
-    <style>
-        /* Menyembunyikan elemen bawaan Blogger / Layout luar */
-        .post-title, .entry-title, h1.post-title, h1.entry-title, #header-wrapper, .header-outer,
-        #sidebar-wrapper, .sidebar-outer, #footer-wrapper, .footer-outer, .tabs-outer, 
-        .custom-sidebar, .nav-header, .header-theme, .back-button, .back-link, #back-to-home { 
-            display: none !important; 
-        }
-        
-        body, html { 
-            background: #f3f4f6 !important; 
-            padding: 0 !important; 
-            margin: 0 !important; 
-            width: 100% !important; 
-            max-width: 100% !important; 
-            overflow-x: hidden !important; 
-        }
-        
-        .content-outer, .content-inner, .main-outer, .main-inner, .post-outer, .post-body, .entry-content, .post, #main, #content, .region-inner { 
-            width: 100% !important; 
-            max-width: 100% !important; 
-            padding: 0 !important; 
-            margin: 0 auto !important; 
-            float: none !important; 
-            display: block !important; 
-            border: none !important; 
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulir Pemesanan Produk</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        /* Scrollbar halus tersembunyi untuk menu kategori */
-        .scroll-tanpa-bar::-webkit-scrollbar { display: none; }
-        .scroll-tanpa-bar { -ms-overflow-style: none; scroll-behavior: smooth; }
-    </style>
+    body {
+      background-color: #f4f7f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 450px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #555;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      border-color: #007bff;
+    }
+
+    .total-box {
+      background-color: #eef2f7;
+      padding: 12px 16px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    button:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+
+    #notification {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 6px;
+      display: none;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 font-sans min-h-screen text-gray-900 pb-28">
+<body>
 
-    <!-- 📌 HEADER UTAMA ALA GOFOOD -->
-    <div class="w-full bg-white sticky top-0 z-40 shadow-xs border-b border-gray-100">
-        <!-- Spanduk Banner Atas -->
-        <div class="w-full h-36 sm:h-48 overflow-hidden bg-amber-500">
-            <img src="https://cdn.phototourl.com/free/2026-07-07-4497e897-0a15-456e-876f-86db9fe2a920.png" alt="Banner Bite & Dim" class="w-full h-full object-cover">
-        </div>
-        
-        <!-- Info Kedai -->
-        <div class="p-4 max-w-2xl mx-auto">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-xl font-black text-gray-900">Bite & Dim, Handil Bakti</h1>
-                    <p class="text-xs text-gray-500 mt-0.5">Dimsum Premium • Order Langsung Masuk Kasir</p>
-                </div>
-                <div class="bg-green-50 text-green-700 text-[11px] font-black px-2 py-1 rounded-full border border-green-200">
-                    🌟 4.9 (Sistem Otomatis)
-                </div>
-            </div>
-
-            <!-- Menubar Kategori Geser Horizontal -->
-            <div class="flex gap-2 overflow-x-auto pt-4 pb-1 scroll-tanpa-bar">
-                <button onclick="scrollKeKategori('kat_dimsum_original')" class="bg-red-500 text-white font-bold text-xs px-4 py-2 rounded-full whitespace-nowrap shadow-xs cursor-pointer">Original</button>
-                <button onclick="scrollKeKategori('kat_dimsum_mentai')" class="bg-white text-gray-700 border border-gray-200 font-bold text-xs px-4 py-2 rounded-full whitespace-nowrap cursor-pointer hover:bg-gray-50">Mentai Series</button>
-                <button onclick="scrollKeKategori('kat_dimsum_keju')" class="bg-white text-gray-700 border border-gray-200 font-bold text-xs px-4 py-2 rounded-full whitespace-nowrap cursor-pointer hover:bg-gray-50">Cheese Lovers</button>
-                <button onclick="scrollKeKategori('kat_dimsum_mix')" class="bg-white text-gray-700 border border-gray-200 font-bold text-xs px-4 py-2 rounded-full whitespace-nowrap cursor-pointer hover:bg-gray-50">Mix Berbagi</button>
-                <button onclick="scrollKeKategori('kat_tahu_bakso')" class="bg-white text-gray-700 border border-gray-200 font-bold text-xs px-4 py-2 rounded-full whitespace-nowrap cursor-pointer hover:bg-gray-50">Tahu Bakso</button>
-            </div>
-        </div>
+<div class="container">
+  <h2>Formulir Pemesanan</h2>
+  <form id="orderForm">
+    <div class="form-group">
+      <label for="namaPelanggan">Nama Lengkap</label>
+      <input type="text" id="namaPelanggan" placeholder="Masukkan nama Anda" required>
     </div>
 
-    <!-- 📦 AREA MENU MAKANAN -->
-    <div class="max-w-2xl mx-auto px-4 mt-4 space-y-6">
-        
-        <div id="loading_menu" class="text-center py-12 text-sm text-gray-500 font-medium flex flex-col items-center justify-center gap-2">
-            <div class="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
-            <span>⏳ Memuat daftar menu Bite & Dim...</span>
-        </div>
-        
-        <!-- Notifikasi Jika Semua Stok Habis -->
-        <div id="notifikasi_toko_tutup" class="hidden bg-red-50 border border-red-200 text-red-800 p-4 rounded-2xl text-center font-bold text-sm">
-            📢 Maaf Bro! Semua menu untuk sesi ini sudah ludes terjual. <br>
-            <span class="text-xs font-normal text-red-600">Nantikan restock menu segar dapur kami berikutnya!</span>
-        </div>
-
-        <!-- Wadah Render Menu Otomatis -->
-        <div id="kontainer_gofood" class="space-y-6"></div>
+    <div class="form-group">
+      <label for="produk">Pilih Produk</label>
+      <select id="produk" required onchange="hitungTotal()">
+        <option value="" data-harga="0">-- Pilih Produk --</option>
+        <option value="Kopi Susu Gula Aren" data-harga="18000">Kopi Susu Gula Aren (Rp 18.000)</option>
+        <option value="Matcha Latte" data-harga="22000">Matcha Latte (Rp 22.000)</option>
+        <option value="Americano" data-harga="15000">Americano (Rp 15.000)</option>
+      </select>
     </div>
 
-    <!-- 🛒 FLOATING BAR KERANJANG BAWAH -->
-    <div id="bar_keranjang_mengambang" class="fixed bottom-0 left-0 right-0 p-4 bg-transparent z-50 transform translate-y-32 transition-transform duration-300">
-        <div class="max-w-xl mx-auto bg-green-600 text-white p-3 rounded-2xl shadow-xl flex items-center justify-between cursor-pointer active:scale-98" onclick="bukaTutupModalKeranjang()">
-            <div class="flex items-center gap-3">
-                <div class="bg-green-700 text-white font-black text-xs px-2.5 py-1 rounded-lg" id="badge_total_qty">0 Item</div>
-                <div>
-                    <p class="text-[11px] font-medium text-green-100 uppercase tracking-wider">Keranjang Belanja</p>
-                    <p class="text-sm font-black" id="bar_total_harga">Rp 0</p>
-                </div>
-            </div>
-            <span class="text-xs font-extrabold flex items-center gap-1 bg-green-700 px-3 py-1.5 rounded-xl">Lihat Pesanan 🛍️</span>
-        </div>
+    <div class="form-group">
+      <label for="jumlah">Jumlah</label>
+      <input type="number" id="jumlah" min="1" value="1" required onchange="hitungTotal()" oninput="hitungTotal()">
     </div>
 
-    <!-- 📑 MODAL BOTTOM SHEET DETAIL KERANJANG -->
-    <div id="modal_keranjang" class="fixed inset-0 bg-black/50 z-50 opacity-0 pointer-events-none transition-opacity duration-300 flex items-end">
-        <div class="absolute inset-0" onclick="bukaTutupModalKeranjang()"></div>
-        
-        <div class="relative w-full max-w-xl mx-auto bg-white rounded-t-3xl p-5 shadow-2xl transform translate-y-full transition-transform duration-300 space-y-4 max-h-[85vh] overflow-y-auto">
-            <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-1"></div>
-            
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-base font-black text-gray-900">Detail Pesanan Pemesan</h3>
-                <button onclick="bukaTutupModalKeranjang()" class="text-sm text-gray-400 font-bold hover:text-gray-600 cursor-pointer">Tutup</button>
-            </div>
-
-            <!-- Input Identitas Pemesan -->
-            <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-2">
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Nama Pemesan:</label>
-                    <input type="text" id="pembeli_nama" placeholder="Masukkan nama panggilan Anda" class="w-full border border-gray-300 p-2.5 rounded-lg text-sm font-medium bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Nomor WhatsApp / HP:</label>
-                    <input type="tel" id="pembeli_hp" placeholder="Contoh: 08123456789" class="w-full border border-gray-300 p-2.5 rounded-lg text-sm font-medium bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500">
-                </div>
-            </div>
-
-            <!-- List Item di Keranjang -->
-            <div id="elemen_keranjang_gofood" class="space-y-3 max-h-48 overflow-y-auto pr-1"></div>
-
-            <!-- Ringkasan Pembayaran & Tombol Kirim Ke Kasir -->
-            <div class="border-t pt-3 space-y-3">
-                <div class="flex justify-between items-center text-sm">
-                    <span class="font-bold text-gray-600">Subtotal Belanja:</span>
-                    <span class="font-black text-base text-gray-900" id="modal_total_harga">Rp 0</span>
-                </div>
-                
-                <button id="btn_kirim_order" onclick="prosesOrderPelanggan()" class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-3.5 rounded-xl text-sm shadow-md text-center flex items-center justify-center gap-2 cursor-pointer transition active:scale-95">
-                    🚀 KIRIM PESANAN KE KASIR
-                </button>
-                <p class="text-[10px] text-gray-400 text-center">Pesanan akan langsung otomatis muncul di layar Aplikasi Kasir toko.</p>
-            </div>
-        </div>
+    <div class="total-box">
+      <span>Total Bayar:</span>
+      <span id="displayTotal">Rp 0</span>
     </div>
 
-    <!-- 🛠️ JAVASCRIPT LOGIK SISTEM APLIKASI -->
-    <script>
-        // URL Web App Google Apps Script Spreadsheet Anda
-        const urlWebApp = "https://script.google.com/macros/s/AKfycbxijavfFwCPC4BrH2-hYpZIN2tJuhfN4hmLo9eGRxKCkVnPGZXPF8CtXIqrzsNGUtOqmA/exec";
+    <button type="submit" id="btnSubmit">Kirim Pesanan</button>
+  </form>
 
-        let keranjang = [];
-        let totalBelanja = 0;
-        let menuDariSheets = [];
-        let modalTerbuka = false;
-        
-        let stokDapurGlobal = { "DIMSUM_GLOBAL": 0, "TAHU_BAKSO": 0 };
+  <div id="notification"></div>
+</div>
 
-        function muatDataMenuPelanggan() {
-            var menuLokal = localStorage.getItem("bdim_menu_lokal");
-            if (menuLokal) {
-                try {
-                    menuDariSheets = JSON.parse(menuLokal);
-                    hitungUlangStokPcsDapur();
-                    renderMenuGoFood();
-                } catch(e) {
-                    console.error("Format cache lokal rusak:", e);
-                }
-            }
+<script>
+  // GANTI URL DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx.../exec";
 
-            // Memperbaiki fetch dengan redirect follow agar terhubung sempurna ke Google Apps Script
-            fetch(urlWebApp, { 
-                method: "GET", 
-                redirect: "follow"
-            })
-            .then(res => {
-                if (!res.ok) throw new Error("Respon jaringan bermasalah");
-                return res.json();
-            })
-            .then(resData => {
-                if (resData && resData.menu) {
-                    menuDariSheets = resData.menu;
-                    localStorage.setItem("bdim_menu_lokal", JSON.stringify(resData.menu));
-                    hitungUlangStokPcsDapur();
-                    renderMenuGoFood();
-                } else {
-                    console.warn("Format menu dari server tidak sesuai:", resData);
-                }
-            })
-            .catch(err => {
-                console.error("Sinkronisasi menu gagal:", err);
-                if (menuDariSheets.length > 0) {
-                    renderMenuGoFood();
-                } else {
-                    document.getElementById("loading_menu").innerHTML = `
-                        <div class="text-red-600 bg-red-50 p-4 rounded-xl border border-red-200">
-                            <p class="font-bold">❌ Gagal Memuat Menu</p>
-                            <p class="text-xs text-gray-600 mt-1">Pastikan koneksi internet aktif atau Google Script sudah ter-deploy 'Anyone'.</p>
-                            <button onclick="muatDataMenuPelanggan()" class="mt-3 bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-lg cursor-pointer">Coba Lagi 🔄</button>
-                        </div>
-                    `;
-                }
-            });
-        }
+  function hitungTotal() {
+    const selectProduk = document.getElementById("produk");
+    const harga = parseFloat(selectProduk.options[selectProduk.selectedIndex].getAttribute("data-harga")) || 0;
+    const jumlah = parseInt(document.getElementById("jumlah").value) || 0;
+    
+    const total = harga * jumlah;
+    document.getElementById("displayTotal").innerText = "Rp " + total.toLocaleString("id-ID");
+    return total;
+  }
 
-        function hitungUlangStokPcsDapur() {
-            stokDapurGlobal = { "DIMSUM_GLOBAL": 0, "TAHU_BAKSO": 0 };
-            menuDariSheets.forEach(item => {
-                let namaLower = item.produk.toLowerCase();
-                let jenisBahan = namaLower.includes("tahu") ? "TAHU_BAKSO" : "DIMSUM_GLOBAL";
-                let stokPorsi = parseInt(item.stok) || 0;
-                let isiPcs = parseInt(item.isiPcs) || 1;
-                let totalPcsItemIni = stokPorsi * isiPcs;
-                if (totalPcsItemIni > stokDapurGlobal[jenisBahan]) {
-                    stokDapurGlobal[jenisBahan] = totalPcsItemIni;
-                }
-            });
-        }
+  document.getElementById("orderForm").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-        function scrollKeKategori(idElemen) {
-            const elemen = document.getElementById(idElemen);
-            if (elemen) {
-                const offset = 210;
-                const bodyRect = document.body.getBoundingClientRect().top;
-                const elementRect = elemen.getBoundingClientRect().top;
-                const elementPosition = elementRect - bodyRect;
-                const offsetPosition = elementPosition - offset;
+    const btnSubmit = document.getElementById("btnSubmit");
+    const notif = document.getElementById("notification");
+    
+    btnSubmit.disabled = true;
+    btnSubmit.innerText = "Mengirim...";
+    notif.style.display = "none";
 
-                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-            }
-        }
+    const selectProduk = document.getElementById("produk");
+    
+    // Siapkan payload JSON sesuai parameter yang dibutuhkan Google Apps Script
+    const payload = {
+      namaPelanggan: document.getElementById("namaPelanggan").value,
+      produk: selectProduk.value,
+      jumlah: parseInt(document.getElementById("jumlah").value),
+      totalHarga: hitungTotal()
+    };
 
-        function renderMenuGoFood() {
-            document.getElementById("loading_menu").classList.add("hidden");
-            let totalPcsDapur = stokDapurGlobal["DIMSUM_GLOBAL"] + stokDapurGlobal["TAHU_BAKSO"];
-            
-            if (totalPcsDapur === 0 && keranjang.length === 0) {
-                document.getElementById("notifikasi_toko_tutup").classList.remove("hidden");
-                return;
-            } else {
-                document.getElementById("notifikasi_toko_tutup").classList.add("hidden");
-            }
+    // Mengirimkan request ke Google Apps Script via Fetch API
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors", // Digunakan agar browser mengizinkan CORS request ke Apps Script
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      // Karena mode 'no-cors', kita mengasumsikan request berhasil jika sampai di blok ini
+      notif.className = "success";
+      notif.innerText = "Pesanan berhasil dikirim! Silakan tunggu konfirmasi.";
+      notif.style.display = "block";
+      
+      // Reset Formulir
+      document.getElementById("orderForm").reset();
+      hitungTotal();
+    })
+    .catch(error => {
+      notif.className = "error";
+      notif.innerText = "Gagal mengirim pesanan. Silakan coba lagi.";
+      notif.style.display = "block";
+      console.error("Error:", error);
+    })
+    .finally(() => {
+      btnSubmit.disabled = false;
+      btnSubmit.innerText = "Kirim Pesanan";
+    });
+  });
+</script>
 
-            let kategoriMap = {
-                "kat_dimsum_original": { nama: "Dimsum Original", items: [] },
-                "kat_dimsum_mentai": { nama: "Dimsum Mentai Series", items: [] },
-                "kat_dimsum_keju": { nama: "Dimsum Cheese Lovers", items: [] },
-                "kat_dimsum_mix": { nama: "Dimsum Mix Berbagi", items: [] },
-                "kat_tahu_bakso": { nama: "Tahu Bakso Gurih", items: [] }
-            };
-
-            menuDariSheets.forEach(item => {
-                let namaLower = item.produk.toLowerCase();
-                if (namaLower.includes("mentai")) kategoriMap["kat_dimsum_mentai"].items.push(item);
-                else if (namaLower.includes("keju")) kategoriMap["kat_dimsum_keju"].items.push(item);
-                else if (namaLower.includes("mix")) kategoriMap["kat_dimsum_mix"].items.push(item);
-                else if (namaLower.includes("tahu")) kategoriMap["kat_tahu_bakso"].items.push(item);
-                else kategoriMap["kat_dimsum_original"].items.push(item);
-            });
-
-            let html = "";
-            for (let key in kategoriMap) {
-                let kat = kategoriMap[key];
-                if (kat.items.length === 0) continue;
-
-                html += `
-                    <div id="${key}" class="scroll-mt-48">
-                        <h2 class="text-base font-black text-gray-900 mb-3 flex items-center gap-2 px-1">
-                            <span>🔥 ${kat.nama}</span>
-                        </h2>
-                        <div class="bg-white rounded-2xl border border-gray-100 shadow-xs divide-y divide-gray-100 overflow-hidden">
-                `;
-
-                kat.items.forEach(item => {
-                    let jenisBahan = item.produk.toLowerCase().includes("tahu") ? "TAHU_BAKSO" : "DIMSUM_GLOBAL";
-                    let pcsTersediaDapur = stokDapurGlobal[jenisBahan] || 0;
-                    let isiPcs = parseInt(item.isiPcs) || 1;
-                    let sisaPorsiLive = Math.floor(pcsTersediaDapur / isiPcs);
-                    let stokReady = sisaPorsiLive > 0;
-
-                    let indexKeranjang = keranjang.findIndex(k => k.produk === item.produk);
-                    let qtyDiKeranjang = indexKeranjang > -1 ? keranjang[indexKeranjang].qty : 0;
-
-                    html += `
-                        <div class="p-4 flex justify-between items-center gap-4 hover:bg-gray-50/50 transition">
-                            <div class="space-y-1 flex-1">
-                                <h3 class="font-bold text-sm text-gray-900">${item.produk}</h3>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs text-gray-400 font-medium">${isiPcs} Pcs / porsi</span>
-                                    ${stokReady ? `<span class="text-[10px] text-green-600 bg-green-50 font-bold px-1.5 py-0.5 rounded-md">Sisa ${sisaPorsiLive}</span>` : `<span class="text-[10px] text-red-600 bg-red-50 font-bold px-1.5 py-0.5 rounded-md">Habis</span>`}
-                                </div>
-                                <p class="font-black text-sm text-gray-900 pt-1">Rp ${parseInt(item.harga).toLocaleString('id-ID')}</p>
-                            </div>
-                            
-                            <div class="shrink-0">
-                                ${stokReady ? `
-                                    ${qtyDiKeranjang > 0 ? `
-                                        <div class="flex items-center bg-green-600 border border-green-700 text-white rounded-xl shadow-xs h-8 overflow-hidden">
-                                            <button onclick="ubahQtyDirect('${item.produk}', -1, ${isiPcs}, '${jenisBahan}')" class="px-3 font-black text-xs h-full hover:bg-green-700 cursor-pointer">-</button>
-                                            <span class="px-2 font-bold text-xs min-w-[20px] text-center">${qtyDiKeranjang}</span>
-                                            <button onclick="ubahQtyDirect('${item.produk}', 1, ${isiPcs}, '${jenisBahan}')" class="px-3 font-black text-xs h-full hover:bg-green-700 cursor-pointer">+</button>
-                                        </div>
-                                    ` : `
-                                        <button onclick="ubahQtyDirect('${item.produk}', 1, ${isiPcs}, '${jenisBahan}')" class="bg-white text-green-600 border border-green-200 hover:border-green-400 font-black text-xs px-5 py-2 rounded-xl shadow-2xs cursor-pointer transition active:scale-95">
-                                            ADD +
-                                        </button>
-                                    `}
-                                ` : `
-                                    <span class="text-[10px] text-gray-400 font-extrabold border border-gray-200 px-3 py-1.5 bg-gray-50 rounded-xl select-none uppercase">HABIS</span>
-                                `}
-                            </div>
-                        </div>
-                    `;
-                });
-
-                html += `</div></div>`;
-            }
-            document.getElementById("kontainer_gofood").innerHTML = html;
-        }
-
-        function ubahQtyDirect(namaProduk, perubahan, isiPcs, jenisBahan) {
-            let indexKeranjang = keranjang.findIndex(item => item.produk === namaProduk);
-            let pcsTersediaSaatIni = stokDapurGlobal[jenisBahan] || 0;
-
-            if (perubahan > 0) {
-                if (pcsTersediaSaatIni < isiPcs) {
-                    alert("Aduh Bro, sisa stok bumbu dapur pas-pasan, tidak bisa menambah paket ini lagi!");
-                    return;
-                }
-                stokDapurGlobal[jenisBahan] = pcsTersediaSaatIni - isiPcs;
-                if (indexKeranjang > -1) {
-                    keranjang[indexKeranjang].qty += 1;
-                } else {
-                    let itemMenu = menuDariSheets.find(item => item.produk === namaProduk);
-                    keranjang.push({ produk: namaProduk, harga: parseInt(itemMenu.harga), qty: 1, isiPcs: isiPcs, bahanBaku: jenisBahan });
-                }
-            } else {
-                if (indexKeranjang > -1) {
-                    stokDapurGlobal[jenisBahan] = pcsTersediaSaatIni + isiPcs;
-                    keranjang[indexKeranjang].qty -= 1;
-                    if (keranjang[indexKeranjang].qty <= 0) {
-                        keranjang.splice(indexKeranjang, 1);
-                    }
-                }
-            }
-            
-            updateKalkulasiBasket();
-            renderMenuGoFood();
-        }
-
-        function updateKalkulasiBasket() {
-            let totalQty = 0;
-            totalBelanja = 0;
-
-            keranjang.forEach(item => {
-                totalQty += item.qty;
-                totalBelanja += (item.qty * item.harga);
-            });
-
-            document.getElementById("badge_total_qty").innerText = `${totalQty} Item`;
-            document.getElementById("bar_total_harga").innerText = `Rp ${totalBelanja.toLocaleString('id-ID')}`;
-            document.getElementById("modal_total_harga").innerText = `Rp ${totalBelanja.toLocaleString('id-ID')}`;
-
-            const barMengambang = document.getElementById("bar_keranjang_mengambang");
-            if (totalQty > 0) {
-                barMengambang.classList.remove("translate-y-32");
-            } else {
-                barMengambang.classList.add("translate-y-32");
-                if (modalTerbuka) bukaTutupModalKeranjang();
-            }
-
-            let htmlModal = "";
-            keranjang.forEach((item) => {
-                htmlModal += `
-                    <div class="flex justify-between items-center border-b border-gray-50 pb-2 text-sm">
-                        <div>
-                            <p class="font-bold text-gray-800">${item.produk}</p>
-                            <p class="text-xs text-gray-400">Rp ${item.harga.toLocaleString('id-ID')} x ${item.qty}</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="font-black text-gray-900">Rp ${(item.qty * item.harga).toLocaleString('id-ID')}</span>
-                            <div class="flex items-center bg-gray-100 border border-gray-200 text-gray-800 rounded-lg h-7 overflow-hidden">
-                                <button onclick="ubahQtyDirect('${item.produk}', -1, ${item.isiPcs}, '${item.bahanBaku}')" class="px-2 font-black text-xs cursor-pointer">-</button>
-                                <span class="px-1.5 font-bold text-xs">${item.qty}</span>
-                                <button onclick="ubahQtyDirect('${item.produk}', 1, ${item.isiPcs}, '${item.bahanBaku}')" class="px-2 font-black text-xs cursor-pointer">+</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            document.getElementById("elemen_keranjang_gofood").innerHTML = htmlModal;
-        }
-
-        function bukaTutupModalKeranjang() {
-            const modal = document.getElementById("modal_keranjang");
-            const content = modal.querySelector(".relative");
-            
-            if (!modalTerbuka) {
-                modal.classList.remove("pointer-events-none", "opacity-0");
-                content.classList.remove("translate-y-full");
-                modalTerbuka = true;
-            } else {
-                modal.classList.add("pointer-events-none", "opacity-0");
-                content.classList.add("translate-y-full");
-                modalTerbuka = false;
-            }
-        }
-
-        // MENYIMPAN PESANAN KE DATABASE UNTUK DITERUSKAN KE KASIR
-        function prosesOrderPelanggan() {
-            if (keranjang.length === 0) return;
-            
-            var nama = document.getElementById("pembeli_nama").value.trim();
-            var noHp = document.getElementById("pembeli_hp").value.trim();
-
-            if (nama === "" || noHp === "") { 
-                alert("Mohon lengkapi Nama dan Nomor WhatsApp/HP Anda!"); 
-                return; 
-            }
-
-            var btnOrder = document.getElementById("btn_kirim_order");
-            btnOrder.disabled = true;
-            btnOrder.innerText = "⏳ Mengirim Pesanan ke Kasir...";
-
-            let formData = new URLSearchParams();
-            formData.append("nama", nama);
-            formData.append("noHp", noHp);
-            formData.append("items", JSON.stringify(keranjang));
-            formData.append("total", totalBelanja);
-
-            fetch(urlWebApp, {
-                method: "POST",
-                redirect: "follow",
-                body: formData
-            })
-            .then(res => res.json())
-            .then(response => {
-                if (response.success) {
-                    alert("🎉 Pesanan Berhasil Terkirim!\n\nNomor Order: " + response.invoice + "\nSilakan tunggu, pesanan Anda sedang masuk dan diproses di layar Kasir.");
-
-                    // Reset Keranjang & Form Input
-                    keranjang = [];
-                    updateKalkulasiBasket();
-                    document.getElementById("pembeli_nama").value = "";
-                    document.getElementById("pembeli_hp").value = "";
-                    if (modalTerbuka) bukaTutupModalKeranjang();
-                } else {
-                    alert("Gagal mengirim pesanan. Silakan coba beberapa saat lagi.");
-                }
-            })
-            .catch(err => {
-                console.error("Error:", err);
-                alert("Terjadi masalah koneksi internet. Silakan coba lagi!");
-            })
-            .finally(() => {
-                btnOrder.disabled = false;
-                btnOrder.innerText = "🚀 KIRIM PESANAN KE KASIR";
-            });
-        }
-
-        window.onload = function() {
-            muatDataMenuPelanggan();
-        };
-    </script>
 </body>
 </html>
