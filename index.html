@@ -9,7 +9,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         
-        /* Menyembunyikan elemen bawaan platform Blogger / CMS jika dipakai */
         .post-title, .entry-title, h1.post-title, h1.entry-title,
         #header-wrapper, .header-outer, #sidebar-wrapper, .sidebar-outer, 
         #footer-wrapper, .footer-outer, .tabs-outer, .custom-sidebar { display: none !important; }
@@ -29,19 +28,21 @@
         <div class="lg:col-span-2 space-y-4">
             <h2 class="text-lg font-black text-gray-800 flex items-center justify-between">
                 <span>🍽️ Pilih Kartu Menu Favoritmu:</span>
-                <span id="loading_status" class="text-xs text-amber-600 font-semibold animate-pulse hidden">⏳ Sync Stok Dapur...</span>
+                <!-- Indikator Auto Sync tiap 3 Detik -->
+                <span id="loading_status" class="text-xs text-amber-600 font-bold flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span> Live Sync Dapur
+                </span>
             </h2>
 
             <!-- KONTAINER KARTU MENU -->
             <div id="kontainer_kartu_menu" class="space-y-4"></div>
         </div>
 
-        <!-- SISI KANAN: KERANJANG BELANJA (STICKY / FIXED MOBILE) -->
+        <!-- SISI KANAN: KERANJANG BELANJA -->
         <div class="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] border-t border-gray-200 z-40 rounded-t-2xl lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:bg-white lg:shadow-md lg:border lg:border-gray-200 lg:rounded-xl lg:h-fit lg:sticky lg:top-4">
             <h2 class="text-base font-black mb-3 border-b pb-2 hidden lg:block text-black">🛒 Keranjang Belanja</h2>
             
             <div class="flex flex-col lg:block gap-2">
-                <!-- Form Input Nama & Nomor WA Pemesan -->
                 <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 space-y-2">
                     <div>
                         <label class="block text-[11px] font-bold text-gray-700 mb-0.5">Nama Anda <span class="text-red-500">*</span></label>
@@ -53,12 +54,10 @@
                     </div>
                 </div>
 
-                <!-- Rincian Item Keranjang -->
                 <div id="elemen_keranjang" class="space-y-2 max-h-[160px] overflow-y-auto border-b pb-2 text-xs">
                     <p class="text-gray-400 text-center text-xs py-2">Keranjang masih kosong, Bro.</p>
                 </div>
 
-                <!-- Total & Tombol Checkout -->
                 <div class="flex items-center justify-between lg:block mt-2 lg:mt-4">
                     <div class="flex justify-between font-black text-sm lg:text-lg lg:mb-3 gap-2">
                         <span class="text-gray-700 lg:text-black">Total:</span>
@@ -96,13 +95,12 @@
 
     <!-- 🧠 SCRIPT LOGIKA APLIKASI -->
     <script>
-        // TEMPELKAN URL WEB APP GOOGLE APPS SCRIPT HASIL DEPLOY DI SINI:
         const urlWebApp = "https://script.google.com/macros/s/AKfycbxijavfFwCPC4BrH2-hYpZIN2tJuhfN4hmLo9eGRxKCkVnPGZXPF8CtXIqrzsNGUtOqmA/exec";
 
         let keranjang = [];
         let totalBelanja = 0;
+        let kartuTerbuka = {}; // Menyimpan status accordion (kartu mana yang sedang dibuka pengguna)
 
-        // Stok Default (Sel D5 & D6)
         let stokDapurPcs = {
             dimsum: 100,
             tahu: 100
@@ -166,38 +164,43 @@
         window.onload = function() {
             renderKartuMenu();
             sinkronkanStokDariSheets();
+            
+            // 🔄 CEK & REFRESH STOK OTOMATIS TIAP 3 DETIK (3000 ms)
+            setInterval(sinkronkanStokDariSheets, 3000);
         };
 
-        function toggleKartu(idIsi, idPanah) {
+        function toggleKartu(idIsi, idPanah, indexKartu) {
             const elIsi = document.getElementById(idIsi);
             const elPanah = document.getElementById(idPanah);
 
             if (elIsi.classList.contains("hidden")) {
                 elIsi.classList.remove("hidden");
                 elPanah.innerText = "▲";
+                kartuTerbuka[indexKartu] = true;
             } else {
                 elIsi.classList.add("hidden");
                 elPanah.innerText = "▼";
+                kartuTerbuka[indexKartu] = false;
             }
         }
 
         function sinkronkanStokDariSheets() {
-            let loadingEl = document.getElementById("loading_status");
-            if (loadingEl) loadingEl.classList.remove("hidden");
-
             fetch(urlWebApp)
                 .then(res => res.json())
                 .then(resData => {
                     if (resData) {
-                        if (resData.stokDimsumPcs !== undefined) stokDapurPcs.dimsum = parseInt(resData.stokDimsumPcs);
-                        if (resData.stokTahuPcs !== undefined) stokDapurPcs.tahu = parseInt(resData.stokTahuPcs);
-                        renderKartuMenu();
+                        let stokBaruDimsum = parseInt(resData.stokDimsumPcs || 0);
+                        let stokBaruTahu = parseInt(resData.stokTahuPcs || 0);
+
+                        // Update tampilan jika stok berubah
+                        if (stokBaruDimsum !== stokDapurPcs.dimsum || stokBaruTahu !== stokDapurPcs.tahu) {
+                            stokDapurPcs.dimsum = stokBaruDimsum;
+                            stokDapurPcs.tahu = stokBaruTahu;
+                            renderKartuMenu();
+                        }
                     }
                 })
-                .catch(err => console.log("Gagal sync live stok:", err))
-                .finally(() => {
-                    if (loadingEl) loadingEl.classList.add("hidden");
-                });
+                .catch(err => console.log("Gagal sync live stok:", err));
         }
 
         function renderKartuMenu() {
@@ -207,18 +210,21 @@
                 let idIsiKartu = `isi_kartu_${indexKartu}`;
                 let idPanahKartu = `panah_kartu_${indexKartu}`;
                 let sisaPcsBahan = stokDapurPcs[kartu.kategoriBahan] || 0;
+                
+                // Menjaga agar kartu yang sedang dibuka tidak sengaja tertutup saat direfresh
+                let isOpen = kartuTerbuka[indexKartu] === true;
 
                 html += `
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                        <button type="button" onclick="toggleKartu('${idIsiKartu}', '${idPanahKartu}')" class="w-full ${kartu.temaWarna} px-4 py-3 flex justify-between items-center cursor-pointer select-none text-left">
+                        <button type="button" onclick="toggleKartu('${idIsiKartu}', '${idPanahKartu}', ${indexKartu})" class="w-full ${kartu.temaWarna} px-4 py-3 flex justify-between items-center cursor-pointer select-none text-left">
                             <h3 class="font-black text-base tracking-wide">📦 ${kartu.namaKartu}</h3>
                             <div class="flex items-center gap-2">
                                 <span class="text-[11px] font-semibold bg-white/20 px-2 py-0.5 rounded-full">${kartu.items.length} pilihan</span>
-                                <span id="${idPanahKartu}" class="text-sm font-bold">▼</span>
+                                <span id="${idPanahKartu}" class="text-sm font-bold">${isOpen ? '▲' : '▼'}</span>
                             </div>
                         </button>
 
-                        <div id="${idIsiKartu}" class="p-3 grid grid-cols-1 sm:grid-cols-2 gap-3 hidden border-t border-gray-100">
+                        <div id="${idIsiKartu}" class="p-3 grid grid-cols-1 sm:grid-cols-2 gap-3 ${isOpen ? '' : 'hidden'} border-t border-gray-100">
                 `;
 
                 kartu.items.forEach((item, indexItem) => {
@@ -358,7 +364,6 @@
                 return;
             }
 
-            // Payload dikirim terpisah khusus untuk kolom A - H Spreadsheet
             let payload = {
                 namaPelanggan: nama,
                 nomorWA: hp,
@@ -373,17 +378,17 @@
                 method: "POST", 
                 headers: { "Content-Type": "text/plain" }, 
                 body: JSON.stringify(payload) 
+            }).then(() => {
+                // Refresh stok langsung setelah order berhasil
+                sinkronkanStokDariSheets();
             }).catch(e => console.log("Gagal kirim data:", e));
 
-            // Set data ke modal sukses
             document.getElementById("modal_nama").innerText = nama;
             document.getElementById("modal_hp").innerText = hp;
             document.getElementById("modal_total").innerText = "Rp " + totalBelanja.toLocaleString('id-ID');
 
-            // Tampilkan modal
             document.getElementById("modal_sukses").classList.remove("hidden");
 
-            // Reset form dan keranjang
             keranjang = [];
             renderKeranjang();
             document.getElementById("pembeli_nama").value = "";
