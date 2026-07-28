@@ -18,11 +18,6 @@
         #footer-wrapper, .footer-outer, .tabs-outer, .custom-sidebar {
             display: none !important;
         }
-
-        .efek-cahaya-putih {
-            color: #000000 !important;
-            text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 15px #ffffff;
-        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen text-black pb-36 lg:pb-8">
@@ -51,11 +46,15 @@
             <h2 class="text-base font-black mb-3 border-b pb-2 hidden lg:block text-black">🛒 Keranjang Belanja</h2>
             
             <div class="flex flex-col lg:block gap-2">
-                <!-- Input Nama Pembeli -->
-                <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200">
-                    <div class="flex items-center lg:block gap-2">
-                        <label class="block text-xs font-bold text-gray-700 whitespace-nowrap lg:mb-1">Nama Anda:</label>
-                        <input type="text" id="pembeli_nama" placeholder="Masukkan nama (Wajib)" class="w-full border border-gray-300 p-2 rounded-lg text-xs font-semibold bg-white text-black focus:outline-amber-500">
+                <!-- 1. Form Input Nama & Nomor HP Pembeli -->
+                <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 space-y-2">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-700 mb-0.5">Nama Anda <span class="text-red-500">*</span></label>
+                        <input type="text" id="pembeli_nama" placeholder="Masukkan nama pemesan" class="w-full border border-gray-300 p-2 rounded-lg text-xs font-semibold bg-white text-black focus:outline-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-700 mb-0.5">Nomor HP/WA <span class="text-red-500">*</span></label>
+                        <input type="tel" id="pembeli_hp" placeholder="Contoh: 08123456789" class="w-full border border-gray-300 p-2 rounded-lg text-xs font-semibold bg-white text-black focus:outline-amber-500">
                     </div>
                 </div>
 
@@ -71,27 +70,11 @@
                         <span id="total_belanja" class="text-amber-600 font-extrabold">Rp 0</span>
                     </div>
 
-                    <!-- 3. TOMBOL DIGANTI MENJADI 'SELESAIKAN PESANAN' -->
                     <button onclick="prosesOrderPelanggan()" class="w-1/2 lg:w-full bg-green-500 hover:bg-green-600 text-white font-black py-3 rounded-xl text-xs shadow-md cursor-pointer text-center flex items-center justify-center gap-2 transition active:scale-95">
                         ✅ SELESAIKAN PESANAN
                     </button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- 📥 BANNER DOWNLOAD APP -->
-    <div id="banner_download_app" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:right-6 sm:translate-x-0 w-[92%] sm:w-[440px] p-4 rounded-2xl shadow-2xl z-50 border border-orange-600 flex flex-col items-center justify-between gap-3" style="background-color: #ff6b35 !important;">
-        <div class="flex items-center gap-3 w-full">
-            <div class="bg-white/30 p-2.5 rounded-xl shrink-0 text-2xl">📲</div>
-            <div class="min-w-0 flex-1">
-                <h4 class="font-black efek-cahaya-putih text-xl leading-tight">Bite & Dim APK</h4>
-                <p class="text-xs font-bold efek-cahaya-putih mt-0.5">Install aplikasi Android resmi agar order lebih gampang!</p>
-            </div>
-        </div>
-        <div class="flex items-center justify-end gap-3 w-full border-t border-white/20 pt-2">
-            <a href="https://drive.google.com/file/d/1rBOC0omGBK0NxWjnoLeXxZEcPyj_lcqR/view?usp=drive_link" target="_blank" class="bg-slate-900 hover:bg-slate-800 text-white text-sm font-black px-5 py-2 rounded-xl text-center no-underline shadow-md">DOWNLOAD</a>
-            <button onclick="tutupBannerDownload()" class="text-black hover:text-white font-black text-lg px-2 cursor-pointer">✕</button>
         </div>
     </div>
 
@@ -103,7 +86,7 @@
         let keranjang = [];
         let totalBelanja = 0;
 
-        // MASTER DATA DENGAN DEFAULT STOK SISA
+        // MASTER DATA
         let daftarKartuMenu = [
             {
                 namaKartu: "Dimsum Original",
@@ -157,16 +140,8 @@
         window.onload = function() {
             renderKartuMenu();
             sinkronkanStokDariSheets();
-            setTimeout(() => {
-                document.getElementById("banner_download_app").classList.remove("hidden");
-            }, 2500);
         };
 
-        function tutupBannerDownload() {
-            document.getElementById("banner_download_app").classList.add("hidden");
-        }
-
-        // AKSI BUKA/TUTUP (EXPAND/COLLAPSE) KARTU MENU
         function toggleKartu(idIsi, idPanah) {
             const elIsi = document.getElementById(idIsi);
             const elPanah = document.getElementById(idPanah);
@@ -180,7 +155,7 @@
             }
         }
 
-        // SINKRONISASI DATA STOK DARI APPS SCRIPT
+        // 3. READING & SYNC STOK DAPUR DARI SHEETS
         function sinkronkanStokDariSheets() {
             let loadingEl = document.getElementById("loading_status");
             if (loadingEl) loadingEl.classList.remove("hidden");
@@ -208,7 +183,6 @@
                 });
         }
 
-        // RENDER KARTU MENU (DIBUAT MENGEMPIS/HIDDEN SAAT PERTAMA DIBUKA)
         function renderKartuMenu() {
             let html = "";
 
@@ -218,7 +192,6 @@
 
                 html += `
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                        <!-- HEADER KARTU (BISA DIKLIK UNTUK BUKA/TUTUP) -->
                         <button type="button" onclick="toggleKartu('${idIsiKartu}', '${idPanahKartu}')" class="w-full ${kartu.temaWarna} px-4 py-3 flex justify-between items-center cursor-pointer select-none text-left">
                             <h3 class="font-black text-base tracking-wide">📦 ${kartu.namaKartu}</h3>
                             <div class="flex items-center gap-2">
@@ -227,14 +200,13 @@
                             </div>
                         </button>
 
-                        <!-- 1. ISI KARTU DI-SET 'hidden' SECARA DEFAULT AGAR MENGEMPIS SAAT DIBUKA -->
                         <div id="${idIsiKartu}" class="p-3 grid grid-cols-1 sm:grid-cols-2 gap-3 hidden border-t border-gray-100">
                 `;
 
                 kartu.items.forEach((item, indexItem) => {
                     let idInput = `qty_${indexKartu}_${indexItem}`;
                     let namaLengkap = `${kartu.namaKartu} - ${item.nama}`;
-                    let stokReady = item.stok > 0; // 2. PENGECEKAN STOK DARI DAPUR
+                    let stokReady = item.stok > 0;
 
                     html += `
                         <div class="border border-gray-100 bg-gray-50/50 rounded-xl p-3 flex flex-col justify-between hover:border-amber-300 transition ${!stokReady ? 'opacity-60' : ''}">
@@ -243,12 +215,12 @@
                                     <span class="font-extrabold text-xs text-gray-800 block">${item.nama}</span>
                                     <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded shrink-0">${item.desc}</span>
                                 </div>
-                                <div class="mt-1 mb-3">
+                                <div class="mt-1 mb-2 flex justify-between items-center">
                                     <span class="font-black text-sm text-amber-600">Rp ${item.harga.toLocaleString('id-ID')}</span>
+                                    <span class="text-[10px] font-bold ${stokReady ? 'text-gray-500' : 'text-red-500'}">Stok: ${item.stok}</span>
                                 </div>
                             </div>
 
-                            <!-- 2. OTOMATIS TAMPILKAN TOMBOL/STOK HABIS -->
                             <div class="space-y-2 mt-auto">
                                 ${stokReady ? `
                                     <div class="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden h-8">
@@ -275,13 +247,14 @@
             document.getElementById("kontainer_kartu_menu").innerHTML = html;
         }
 
+        // 3. KONTROL QTY SESUAI STOK DAPUR
         function tambahQty(id, maxStok) {
             let el = document.getElementById(id);
             let val = parseInt(el.value || 1);
             if (val < maxStok) {
                 el.value = val + 1;
             } else {
-                alert(`Maksimal pemesanan stok tersedia hanya ${maxStok} porsi.`);
+                alert(`Sisa stok dapur hanya tersedia ${maxStok} porsi!`);
             }
         }
 
@@ -291,19 +264,23 @@
             if (val > 1) el.value = val - 1;
         }
 
+        // 3. TAMBAH KERANJANG DENGAN PENGECEKAN STOK TOTAL
         function tambahKeKeranjang(namaItem, harga, idInput, maxStok) {
-            let qty = parseInt(document.getElementById(idInput).value) || 1;
+            let qtyInput = parseInt(document.getElementById(idInput).value) || 1;
             let idx = keranjang.findIndex(x => x.nama === namaItem);
 
+            let qtyDiKeranjangSaatIni = idx > -1 ? keranjang[idx].qty : 0;
+            let totalAkanDipesan = qtyDiKeranjangSaatIni + qtyInput;
+
+            if (totalAkanDipesan > maxStok) {
+                alert(`Gagal! Stok dapur tersisa ${maxStok} porsi.\n(Kamu sudah punya ${qtyDiKeranjangSaatIni} porsi di keranjang).`);
+                return;
+            }
+
             if (idx > -1) {
-                if (keranjang[idx].qty + qty <= maxStok) {
-                    keranjang[idx].qty += qty;
-                } else {
-                    alert("Jumlah melebihi stok yang tersedia!");
-                    return;
-                }
+                keranjang[idx].qty = totalAkanDipesan;
             } else {
-                keranjang.push({ nama: namaItem, harga: harga, qty: qty });
+                keranjang.push({ nama: namaItem, harga: harga, qty: qtyInput });
             }
 
             document.getElementById(idInput).value = 1;
@@ -345,6 +322,7 @@
             document.getElementById("total_belanja").innerText = "Rp " + totalBelanja.toLocaleString('id-ID');
         }
 
+        // 1. PROSES CHECKOUT DENGAN VALIDASI NAMA & NOMOR HP
         function prosesOrderPelanggan() {
             if (keranjang.length === 0) {
                 alert("Keranjang masih kosong, Bro!");
@@ -352,20 +330,27 @@
             }
 
             let nama = document.getElementById("pembeli_nama").value.trim();
+            let hp = document.getElementById("pembeli_hp").value.trim();
+
             if (nama === "") {
                 alert("Mohon isi Nama Anda terlebih dahulu!");
                 return;
             }
 
+            if (hp === "") {
+                alert("Mohon isi Nomor HP/WA Anda terlebih dahulu!");
+                return;
+            }
+
             // Simpan Transaksi ke Spreadsheet Apps Script
             let payload = {
-                pelanggan: nama + " (Web Order)",
+                pelanggan: `${nama} (${hp}) - Web Order`,
                 items: keranjang.map(i => ({ produk: i.nama, qty: i.qty, subtotal: i.qty * i.harga }))
             };
             fetch(urlWebApp, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) }).catch(e => console.log(e));
 
             // Format Pesan WhatsApp
-            let teksWA = `*Halo Admin BITE & DIM, Saya mau order!* 😋\n-------------------------------------------\n*Nama Pelanggan:* ${nama}\n-------------------------------------------\n\n*RINCIAN PESANAN:*\n`;
+            let teksWA = `*Halo Admin BITE & DIM, Saya mau order!* 😋\n-------------------------------------------\n*Nama Pelanggan:* ${nama}\n*No. HP/WA:* ${hp}\n-------------------------------------------\n\n*RINCIAN PESANAN:*\n`;
             
             keranjang.forEach((item, i) => {
                 teksWA += `${i + 1}. *${item.nama}*\n      ${item.qty} x Rp ${item.harga.toLocaleString('id-ID')} = *Rp ${(item.qty * item.harga).toLocaleString('id-ID')}*\n`;
@@ -373,10 +358,11 @@
 
             teksWA += `\n*TOTAL BAYAR: Rp ${totalBelanja.toLocaleString('id-ID')}*\n-------------------------------------------\nMohon info nomor rekening / e-wallet untuk pembayarannya ya admin, Terima Kasih!`;
 
-            // Clear Keranjang & Redireksi WA
+            // Reset Keranjang & Form
             keranjang = [];
             renderKeranjang();
             document.getElementById("pembeli_nama").value = "";
+            document.getElementById("pembeli_hp").value = "";
 
             setTimeout(() => {
                 window.location.href = `https://wa.me/${nomorWhatsAppToko}?text=${encodeURIComponent(teksWA)}`;
