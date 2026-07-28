@@ -15,7 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   
     <style>
-        /* Menyembunyikan elemen bawaan Blogger */
+        /* Menyembunyikan elemen bawaan Blogger / Layout bawaan */
         .post-title, .entry-title, h1.post-title, h1.entry-title, #header-wrapper, .header-outer {
             display: none !important;
         }
@@ -59,7 +59,10 @@
     <!-- 📦 AREA MENU MAKANAN -->
     <div class="max-w-2xl mx-auto px-4 mt-4 space-y-6">
         
-        <div id="loading_menu" class="text-center py-12 text-sm text-gray-500 font-medium">⏳ Memuat daftar menu Bite & Dim...</div>
+        <div id="loading_menu" class="text-center py-12 text-sm text-gray-500 font-medium flex flex-col items-center justify-center gap-2">
+            <div class="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+            <span>⏳ Memuat daftar menu Bite & Dim...</span>
+        </div>
         
         <!-- Notifikasi Jika Semua Stok Habis -->
         <div id="notifikasi_toko_tutup" class="hidden bg-red-50 border border-red-200 text-red-800 p-4 rounded-2xl text-center font-bold text-sm">
@@ -97,7 +100,7 @@
                 <button onclick="bukaTutupModalKeranjang()" class="text-sm text-gray-400 font-bold hover:text-gray-600 cursor-pointer">Tutup</button>
             </div>
 
-            <!-- Input Identitas Pemesan (Diperlukan oleh Kasir) -->
+            <!-- Input Identitas Pemesan -->
             <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-2">
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Nama Pemesan:</label>
@@ -142,24 +145,47 @@
         function muatDataMenuPelanggan() {
             var menuLokal = localStorage.getItem("bdim_menu_lokal");
             if (menuLokal) {
-                menuDariSheets = JSON.parse(menuLokal);
-                hitungUlangStokPcsDapur();
-                renderMenuGoFood();
+                try {
+                    menuDariSheets = JSON.parse(menuLokal);
+                    hitungUlangStokPcsDapur();
+                    renderMenuGoFood();
+                } catch(e) {
+                    console.error("Format cache lokal rusak:", e);
+                }
             }
 
-            fetch(urlWebApp, { method: "GET", mode: "cors", cache: "no-store" })
-            .then(res => res.json())
+            // Memperbaiki fetch dengan redirect follow agar terhubung sempurna ke Google Apps Script
+            fetch(urlWebApp, { 
+                method: "GET", 
+                redirect: "follow"
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Respon jaringan bermasalah");
+                return res.json();
+            })
             .then(resData => {
                 if (resData && resData.menu) {
                     menuDariSheets = resData.menu;
                     localStorage.setItem("bdim_menu_lokal", JSON.stringify(resData.menu));
                     hitungUlangStokPcsDapur();
                     renderMenuGoFood();
+                } else {
+                    console.warn("Format menu dari server tidak sesuai:", resData);
                 }
             })
             .catch(err => {
-                console.error("Sinkronisasi gagal:", err);
-                if (menuDariSheets.length > 0) renderMenuGoFood();
+                console.error("Sinkronisasi menu gagal:", err);
+                if (menuDariSheets.length > 0) {
+                    renderMenuGoFood();
+                } else {
+                    document.getElementById("loading_menu").innerHTML = `
+                        <div class="text-red-600 bg-red-50 p-4 rounded-xl border border-red-200">
+                            <p class="font-bold">❌ Gagal Memuat Menu</p>
+                            <p class="text-xs text-gray-600 mt-1">Pastikan koneksi internet aktif atau Google Script sudah ter-deploy 'Anyone'.</p>
+                            <button onclick="muatDataMenuPelanggan()" class="mt-3 bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-lg cursor-pointer">Coba Lagi 🔄</button>
+                        </div>
+                    `;
+                }
             });
         }
 
@@ -326,11 +352,11 @@
                 barMengambang.classList.remove("translate-y-32");
             } else {
                 barMengambang.classList.add("translate-y-32");
-                if(modalTerbuka) bukaTutupModalKeranjang();
+                if (modalTerbuka) bukaTutupModalKeranjang();
             }
 
             let htmlModal = "";
-            keranjang.forEach((item, index) => {
+            keranjang.forEach((item) => {
                 htmlModal += `
                     <div class="flex justify-between items-center border-b border-gray-50 pb-2 text-sm">
                         <div>
@@ -366,7 +392,7 @@
             }
         }
 
-        // FUNGSI UTAMA: MENYIMPAN PESANAN KE DATABASE UNTUK DITERUSKAN KE KASIR
+        // MENYIMPAN PESANAN KE DATABASE UNTUK DITERUSKAN KE KASIR
         function prosesOrderPelanggan() {
             if (keranjang.length === 0) return;
             
@@ -382,16 +408,15 @@
             btnOrder.disabled = true;
             btnOrder.innerText = "⏳ Mengirim Pesanan ke Kasir...";
 
-            // Mengubah format pengiriman menjadi Form Data URL Encoded
             let formData = new URLSearchParams();
             formData.append("nama", nama);
             formData.append("noHp", noHp);
             formData.append("items", JSON.stringify(keranjang));
             formData.append("total", totalBelanja);
 
-            // Kirim data ke Google Sheets
             fetch(urlWebApp, {
                 method: "POST",
+                redirect: "follow",
                 body: formData
             })
             .then(res => res.json())
@@ -425,7 +450,7 @@
     </script>
     
     <style>
-        /* CSS Pembersih Elemen Blogger */
+        /* CSS Pembersih Elemen Luar */
         #sidebar-wrapper, .sidebar-outer, #footer-wrapper, .footer-outer, .tabs-outer, 
         .custom-sidebar, .nav-header, .header-theme, .back-button, .back-link, #back-to-home { 
             display: none !important; 
