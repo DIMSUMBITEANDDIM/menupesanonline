@@ -382,19 +382,17 @@
             btnOrder.disabled = true;
             btnOrder.innerText = "⏳ Mengirim Pesanan ke Kasir...";
 
-            let payload = {
-                nama: nama,
-                noHp: noHp,
-                items: keranjang,
-                total: totalBelanja
-            };
+            // Mengubah format pengiriman menjadi Form Data URL Encoded
+            let formData = new URLSearchParams();
+            formData.append("nama", nama);
+            formData.append("noHp", noHp);
+            formData.append("items", JSON.stringify(keranjang));
+            formData.append("total", totalBelanja);
 
-            // Kirim data ke Google Sheets (Tab Pesanan_Masuk)
+            // Kirim data ke Google Sheets
             fetch(urlWebApp, {
                 method: "POST",
-                mode: "cors",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload)
+                body: formData
             })
             .then(res => res.json())
             .then(response => {
