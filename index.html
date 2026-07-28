@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>    
+<head>
     <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,10 +15,32 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   
     <style>
-        /* Menyembunyikan elemen bawaan Blogger / Layout bawaan */
-        .post-title, .entry-title, h1.post-title, h1.entry-title, #header-wrapper, .header-outer {
-            display: none !important;
+        /* Menyembunyikan elemen bawaan Blogger / Layout luar */
+        .post-title, .entry-title, h1.post-title, h1.entry-title, #header-wrapper, .header-outer,
+        #sidebar-wrapper, .sidebar-outer, #footer-wrapper, .footer-outer, .tabs-outer, 
+        .custom-sidebar, .nav-header, .header-theme, .back-button, .back-link, #back-to-home { 
+            display: none !important; 
         }
+        
+        body, html { 
+            background: #f3f4f6 !important; 
+            padding: 0 !important; 
+            margin: 0 !important; 
+            width: 100% !important; 
+            max-width: 100% !important; 
+            overflow-x: hidden !important; 
+        }
+        
+        .content-outer, .content-inner, .main-outer, .main-inner, .post-outer, .post-body, .entry-content, .post, #main, #content, .region-inner { 
+            width: 100% !important; 
+            max-width: 100% !important; 
+            padding: 0 !important; 
+            margin: 0 auto !important; 
+            float: none !important; 
+            display: block !important; 
+            border: none !important; 
+        }
+
         /* Scrollbar halus tersembunyi untuk menu kategori */
         .scroll-tanpa-bar::-webkit-scrollbar { display: none; }
         .scroll-tanpa-bar { -ms-overflow-style: none; scroll-behavior: smooth; }
@@ -448,15 +470,5 @@
             muatDataMenuPelanggan();
         };
     </script>
-    
-    <style>
-        /* CSS Pembersih Elemen Luar */
-        #sidebar-wrapper, .sidebar-outer, #footer-wrapper, .footer-outer, .tabs-outer, 
-        .custom-sidebar, .nav-header, .header-theme, .back-button, .back-link, #back-to-home { 
-            display: none !important; 
-        }
-        body, html { background: #f3f4f6 !important; padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; }
-        .content-outer, .content-inner, .main-outer, .main-inner, .post-outer, .post-body, .entry-content, .post, #main, #content, .region-inner { width: 100% !important; max-width: 100% !important; padding: 0 !important; margin: 0 auto !important; float: none !important; display: block !important; border: none !important; }
-    </style>
 </body>
 </html>
