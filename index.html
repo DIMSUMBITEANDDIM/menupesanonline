@@ -3,225 +3,292 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Formulir Pemesanan Produk</title>
+  <title>Aplikasi Pemesanan Online (Pelanggan) & Kasir - BITE & DIM</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    
     body {
-      background-color: #f4f7f6;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #F8F5E9;
     }
 
-    .container {
-      background-color: #ffffff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 450px;
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D1C7BD;
+      border-radius: 4px;
     }
 
-    h2 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 24px;
+    /* Frame Styling untuk Simulator */
+    .phone-frame {
+      border: 12px solid #1A1A1A;
+      border-radius: 36px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      background-color: #FFFFFF;
+      overflow: hidden;
     }
 
-    .form-group {
-      margin-bottom: 18px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      color: #555;
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    select {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    select:focus {
-      border-color: #007bff;
-    }
-
-    .total-box {
-      background-color: #eef2f7;
-      padding: 12px 16px;
-      border-radius: 6px;
-      display: flex;
-      justify-content: space-between;
-      font-weight: bold;
-      margin-bottom: 20px;
-      color: #333;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    button:hover {
-      background-color: #218838;
-    }
-
-    button:disabled {
-      background-color: #6c757d;
-      cursor: not-allowed;
-    }
-
-    #notification {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 6px;
-      display: none;
-      font-size: 14px;
-      text-align: center;
-    }
-
-    .success {
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-
-    .error {
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+    .tablet-frame {
+      border: 14px solid #1A1A1A;
+      border-radius: 28px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      background-color: #FFFFFF;
+      overflow: hidden;
     }
   </style>
 </head>
-<body>
+<body class="text-slate-800 min-h-screen flex flex-col">
 
-<div class="container">
-  <h2>Formulir Pemesanan</h2>
-  <form id="orderForm">
-    <div class="form-group">
-      <label for="namaPelanggan">Nama Lengkap</label>
-      <input type="text" id="namaPelanggan" placeholder="Masukkan nama Anda" required>
-    </div>
-
-    <div class="form-group">
-      <label for="produk">Pilih Produk</label>
-      <select id="produk" required onchange="hitungTotal()">
-        <option value="" data-harga="0">-- Pilih Produk --</option>
-        <option value="Kopi Susu Gula Aren" data-harga="18000">Kopi Susu Gula Aren (Rp 18.000)</option>
-        <option value="Matcha Latte" data-harga="22000">Matcha Latte (Rp 22.000)</option>
-        <option value="Americano" data-harga="15000">Americano (Rp 15.000)</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="jumlah">Jumlah</label>
-      <input type="number" id="jumlah" min="1" value="1" required onchange="hitungTotal()" oninput="hitungTotal()">
-    </div>
-
-    <div class="total-box">
-      <span>Total Bayar:</span>
-      <span id="displayTotal">Rp 0</span>
-    </div>
-
-    <button type="submit" id="btnSubmit">Kirim Pesanan</button>
-  </form>
-
-  <div id="notification"></div>
-</div>
-
-<script>
-  // GANTI URL DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx.../exec";
-
-  function hitungTotal() {
-    const selectProduk = document.getElementById("produk");
-    const harga = parseFloat(selectProduk.options[selectProduk.selectedIndex].getAttribute("data-harga")) || 0;
-    const jumlah = parseInt(document.getElementById("jumlah").value) || 0;
-    
-    const total = harga * jumlah;
-    document.getElementById("displayTotal").innerText = "Rp " + total.toLocaleString("id-ID");
-    return total;
-  }
-
-  document.getElementById("orderForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-
-    const btnSubmit = document.getElementById("btnSubmit");
-    const notif = document.getElementById("notification");
-    
-    btnSubmit.disabled = true;
-    btnSubmit.innerText = "Mengirim...";
-    notif.style.display = "none";
-
-    const selectProduk = document.getElementById("produk");
-    
-    // Siapkan payload JSON sesuai parameter yang dibutuhkan Google Apps Script
-    const payload = {
-      namaPelanggan: document.getElementById("namaPelanggan").value,
-      produk: selectProduk.value,
-      jumlah: parseInt(document.getElementById("jumlah").value),
-      totalHarga: hitungTotal()
-    };
-
-    // Mengirimkan request ke Google Apps Script via Fetch API
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors", // Digunakan agar browser mengizinkan CORS request ke Apps Script
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    })
-    .then(() => {
-      // Karena mode 'no-cors', kita mengasumsikan request berhasil jika sampai di blok ini
-      notif.className = "success";
-      notif.innerText = "Pesanan berhasil dikirim! Silakan tunggu konfirmasi.";
-      notif.style.display = "block";
+  <!-- 1. HEADER UTAMA POS / DASHBOARD -->
+  <header class="bg-[#F8BA5B] border-b border-[#E5A748] px-4 py-3 shadow-xs">
+    <div class="max-w-[1600px] mx-auto flex flex-wrap justify-between items-center gap-4">
       
-      // Reset Formulir
-      document.getElementById("orderForm").reset();
-      hitungTotal();
-    })
-    .catch(error => {
-      notif.className = "error";
-      notif.innerText = "Gagal mengirim pesanan. Silakan coba lagi.";
-      notif.style.display = "block";
-      console.error("Error:", error);
-    })
-    .finally(() => {
-      btnSubmit.disabled = false;
-      btnSubmit.innerText = "Kirim Pesanan";
-    });
-  });
-</script>
+      <!-- Brand Logo & Detail Lokasi -->
+      <div class="flex items-center gap-3">
+        <div class="bg-[#E65100] text-white p-2 rounded-2xl flex items-center justify-center font-extrabold text-xl shadow-inner">
+          🥟
+        </div>
+        <div>
+          <h1 class="font-extrabold text-2xl tracking-tight text-slate-900 leading-none">BITE & DIM</h1>
+          <p class="text-xs font-semibold text-slate-800 mt-1">Fictional small food and beverage business <br class="hidden sm:inline">Banjarmasin, South Kalimantan, Indonesia</p>
+        </div>
+      </div>
+
+      <!-- User Admin Profile -->
+      <div class="flex items-center gap-3 bg-amber-400/40 px-3 py-1.5 rounded-xl border border-amber-500/30">
+        <div class="w-9 h-9 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-sm">
+          👤
+        </div>
+        <div class="text-right">
+          <p class="text-xs font-extrabold text-slate-900 leading-tight">Admin</p>
+          <p class="text-[11px] font-semibold text-slate-700">Kasir (Me)</p>
+        </div>
+        <button class="ml-2 text-slate-800 hover:text-black cursor-pointer">⚙️</button>
+      </div>
+
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="max-w-[1600px] mx-auto flex items-center justify-between mt-3 pt-2 border-t border-amber-600/20 text-xs font-bold overflow-x-auto">
+      <div class="flex items-center gap-2 shrink-0">
+        <button class="bg-[#FFE0B2] text-slate-900 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-amber-300 shadow-2xs">
+          📊 Dashboard
+        </button>
+        <button class="text-slate-800 hover:bg-amber-400/50 px-3 py-1.5 rounded-lg transition">📋 Pesanan Masuk</button>
+        <button class="text-slate-800 hover:bg-amber-400/50 px-3 py-1.5 rounded-lg transition">👤 Kasir</button>
+        <button class="text-slate-800 hover:bg-amber-400/50 px-3 py-1.5 rounded-lg transition">📊 Stok</button>
+        <button class="text-slate-800 hover:bg-amber-400/50 px-3 py-1.5 rounded-lg transition">📈 Penjualan</button>
+        <button class="text-slate-800 hover:bg-amber-400/50 px-3 py-1.5 rounded-lg transition">🕒 Margin</button>
+      </div>
+      <div class="text-[11px] font-bold text-slate-800 shrink-0 ml-4">
+        Tuesday, July 28, 2026, 6:13:48 PM WITA
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. MAIN LAYOUT DUAL DISPLAY SIMULATOR -->
+  <main class="max-w-[1600px] mx-auto w-full p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 items-start">
+
+    <!-- SISI KIRI: APLIKASI PEMESANAN ONLINE (PELANGGAN) -->
+    <section class="lg:col-span-5 flex flex-col items-center">
+      <h2 class="font-extrabold text-slate-900 text-lg mb-3 tracking-tight">
+        Aplikasi Pemesanan Online (Pelanggan)
+      </h2>
+
+      <!-- Phone Device Simulator -->
+      <div class="phone-frame w-full max-w-[380px] h-[680px] flex flex-col bg-[#FFF9F0]">
+        
+        <!-- Mobile Header App -->
+        <div class="bg-[#F8A035] text-white p-3.5 flex items-center justify-between shadow-xs">
+          <button class="text-xl">☰</button>
+          <span class="font-bold text-sm tracking-wide">Pesan Online "Bite & Dim"</span>
+          <div class="w-5"></div>
+        </div>
+
+        <!-- Scrollable Menu Content -->
+        <div class="p-3 overflow-y-auto space-y-3 flex-1">
+          
+          <!-- Menu Card 1 -->
+          <div class="bg-white p-2.5 rounded-xl border border-amber-100 flex items-center gap-3 shadow-2xs">
+            <img src="https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=150&auto=format&fit=crop" class="w-16 h-16 rounded-lg object-cover" alt="Dimsum Paket Hemat">
+            <div class="flex-1 min-w-0">
+              <h3 class="font-extrabold text-xs text-slate-900 truncate">Dimsum Paket Hemat</h3>
+              <p class="text-[10px] text-slate-500 line-clamp-2">Dimsum Paket Heman, nurau, dan sermontangan</p>
+              <p class="font-black text-xs text-slate-900 mt-1">Rp 12.000</p>
+            </div>
+            <button onclick="tambahItem('Dimsum Paket Hemat', 12000)" class="w-7 h-7 bg-[#F8A035] text-white font-bold text-lg rounded-full flex items-center justify-center cursor-pointer hover:bg-amber-600 transition">+</button>
+          </div>
+
+          <!-- Menu Card 2 -->
+          <div class="bg-white p-2.5 rounded-xl border border-amber-100 flex items-center gap-3 shadow-2xs">
+            <img src="https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?w=150&auto=format&fit=crop" class="w-16 h-16 rounded-lg object-cover" alt="Tahu Bakso Box Kecil">
+            <div class="flex-1 min-w-0">
+              <h3 class="font-extrabold text-xs text-slate-900 truncate">Tahu Bakso Box Kecil</h3>
+              <p class="text-[10px] text-slate-500 line-clamp-2">Tahu Bakso Box Kecil, Kecil</p>
+              <p class="font-black text-xs text-slate-900 mt-1">Rp 10.000</p>
+            </div>
+            <button onclick="tambahItem('Tahu Bakso Box Kecil', 10000)" class="w-7 h-7 bg-[#F8A035] text-white font-bold text-lg rounded-full flex items-center justify-center cursor-pointer hover:bg-amber-600 transition">+</button>
+          </div>
+
+          <!-- Menu Card 3 -->
+          <div class="bg-white p-2.5 rounded-xl border border-amber-100 flex items-center gap-3 shadow-2xs">
+            <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?w=150&auto=format&fit=crop" class="w-16 h-16 rounded-lg object-cover" alt="Dimsum Ramean Mix">
+            <div class="flex-1 min-w-0">
+              <h3 class="font-extrabold text-xs text-slate-900 truncate">Dimsum Ramean Mix</h3>
+              <p class="text-[10px] text-slate-500 line-clamp-2">Dimsum Paket Heman, nurau, dan sermontangan</p>
+              <p class="font-black text-xs text-slate-900 mt-1">Rp 7.000</p>
+            </div>
+            <button onclick="tambahItem('Dimsum Ramean Mix', 7000)" class="w-7 h-7 bg-[#F8A035] text-white font-bold text-lg rounded-full flex items-center justify-center cursor-pointer hover:bg-amber-600 transition">+</button>
+          </div>
+
+        </div>
+
+        <!-- Sticky Floating Toast / Cart Overlay -->
+        <div class="p-3 bg-[#FFF9F0] border-t border-amber-100 space-y-2">
+          
+          <!-- Alert Toast Bubble -->
+          <div class="bg-[#C85A17] text-white px-3 py-1.5 rounded-xl text-[11px] font-semibold text-center shadow-xs">
+            Pesanan Anda: Dimsum Hemat, Tahu Bakso (2)
+          </div>
+
+          <!-- Sticky Cart Action Button -->
+          <div class="bg-[#C85A17] text-white p-2.5 rounded-xl flex items-center justify-between text-xs font-extrabold shadow-md">
+            <span>Keranjang (3 items) - Rp 34.000</span>
+            <button class="bg-[#E65100] hover:bg-orange-700 text-white px-3 py-1 rounded-lg text-[11px] transition">Pesan Sekarang</button>
+          </div>
+
+          <!-- Quick Summary Bar -->
+          <div class="bg-[#FFE0B2] p-2 rounded-xl text-[11px] font-bold text-slate-800 text-center border border-amber-200">
+            Pesanan Anda: Dimsum Hemat, Tahu Bakso (2)
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SISI KANAN: APLIKASI KASIR / POS (BITE & DIM) -->
+    <section class="lg:col-span-7 flex flex-col items-center">
+      <h2 class="font-extrabold text-slate-900 text-lg mb-3 tracking-tight">
+        Aplikasi Kasir (BITE & DIM)
+      </h2>
+
+      <!-- Tablet Device Simulator -->
+      <div class="tablet-frame w-full h-[680px] flex flex-col bg-[#FFF8ED]">
+        
+        <!-- Tablet POS Header -->
+        <div class="bg-[#F8A035] text-slate-900 p-3 flex items-center justify-between border-b border-amber-400">
+          <div class="flex items-center gap-2">
+            <button class="text-xl">☰</button>
+            <span class="font-extrabold text-sm">Kasir - Dashboard (Real-time polling)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="bg-amber-200 text-slate-900 text-[10px] font-bold px-2 py-0.5 rounded-full">💬 1</span>
+            <button class="text-slate-900 font-bold">⚙️</button>
+          </div>
+        </div>
+
+        <!-- Scrollable Dashboard Content -->
+        <div class="p-4 overflow-y-auto space-y-4 flex-1">
+          
+          <!-- SECTION 1: NOTIFIKASI PESANAN -->
+          <div class="bg-[#FFF0D4] p-3 rounded-2xl border border-amber-200">
+            <h3 class="font-black text-slate-900 text-base mb-3">Notifikasi Pesanan</h3>
+
+            <!-- Data Table Notifikasi -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="text-slate-900 font-bold border-b border-amber-200 pb-2">
+                    <th class="py-1 px-2">ID Invoice</th>
+                    <th class="py-1 px-2">Waktu</th>
+                    <th class="py-1 px-2">Nama Pelanggan</th>
+                    <th class="py-1 px-2">Meja/No HP</th>
+                    <th class="py-1 px-2">Detail Order</th>
+                    <th class="py-1 px-2">Total Harga</th>
+                    <th class="py-1 px-2">Status</th>
+                    <th class="py-1 px-2"></th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-amber-200/50">
+                  
+                  <!-- Baris 1: PENDING (Highlight Merah) -->
+                  <tr class="bg-[#E53935] text-white font-bold rounded-lg">
+                    <td class="py-2.5 px-2 font-mono">INV-961023</td>
+                    <td class="py-2.5 px-2">18:13:10</td>
+                    <td class="py-2.5 px-2">Jimmy</td>
+                    <td class="py-2.5 px-2">Meja 5</td>
+                    <td class="py-2.5 px-2 text-[11px] leading-tight">1x Dimsum Ramean Mix, 2x Tahu Bakso</td>
+                    <td class="py-2.5 px-2 font-extrabold">Rp 65.000</td>
+                    <td class="py-2.5 px-2">
+                      <span class="bg-[#FFF0D4] text-slate-900 text-[10px] px-2 py-0.5 rounded-full font-black">PENDING</span>
+                    </td>
+                    <td class="py-2.5 px-2">
+                      <button class="bg-[#F8A035] hover:bg-amber-600 text-slate-900 px-3 py-1.5 rounded-xl text-[11px] font-black cursor-pointer shadow-xs transition">
+                        Ambil Pesanan
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Baris 2: TERIMA (Normal Status) -->
+                  <tr class="text-slate-800 font-semibold">
+                    <td class="py-2.5 px-2 font-mono">INV-961011</td>
+                    <td class="py-2.5 px-2">18:10:45</td>
+                    <td class="py-2.5 px-2">Reni</td>
+                    <td class="py-2.5 px-2">Meja 2</td>
+                    <td class="py-2.5 px-2 text-[11px] leading-tight">1x Americano, 1x Matcha</td>
+                    <td class="py-2.5 px-2 font-extrabold">Rp 37.000</td>
+                    <td class="py-2.5 px-2">
+                      <span class="bg-[#C8E6C9] text-[#2E7D32] text-[10px] px-2 py-0.5 rounded-full font-black">TERIMA</span>
+                    </td>
+                    <td class="py-2.5 px-2"></td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Indicator Suara Notifikasi -->
+            <div class="flex items-center justify-end gap-2 mt-4 text-xs font-bold text-slate-800">
+              <span class="text-emerald-600 text-base">📶</span>
+              <button class="bg-[#4CAF50] text-white p-2 rounded-full flex items-center justify-center">
+                🔊
+              </button>
+              <span>SUARA: Pesanan Masuk <span class="text-emerald-600">(Aktif)</span></span>
+            </div>
+
+          </div>
+
+          <!-- SECTION 2: CATAT PENJUALAN (SELESAI) -->
+          <div class="bg-[#FFF0D4] p-3 rounded-2xl border border-amber-200">
+            <h3 class="font-black text-slate-900 text-base mb-3">Catat Penjualan (Selesai)</h3>
+            
+            <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-amber-200">
+              <span class="font-mono text-xs font-bold text-slate-800">INV-961011</span>
+              <span class="text-xs font-bold text-slate-600">Selesai</span>
+              <button class="bg-[#F8A035] hover:bg-amber-600 text-slate-900 font-extrabold text-xs px-4 py-2 rounded-xl transition cursor-pointer shadow-xs">
+                Catat ke Penjualan
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Script Sederhana Integrasi Simulasi Interaktif -->
+  <script>
+    function tambahItem(namaProduk, harga) {
+      alert(`Berhasil menambahkan ${namaProduk} (Rp ${harga.toLocaleString('id-ID')}) ke keranjang!`);
+    }
+  </script>
 
 </body>
 </html>
