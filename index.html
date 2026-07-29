@@ -15,7 +15,16 @@
     </style>
 </head>
 <!-- pb-36 MEMBERIKAN SPASI BAWAH CUKUP BESAR AGAR MENU BAWAH TIDAK TERTUTUP FLOATING KERANJANG -->
-<body class="min-h-screen text-gray-900 pb-80 bg-cover bg-center bg-fixed bg-no-repeat" style="background-image: url('https://cdn.phototourl.com/free/2026-07-29-2d19d471-10cb-478b-8ca9-aebee7a4be42.jpg');">
+    <header class="w-full h-64 overflow-hidden relative shadow-md">
+  <!-- Gambar Background -->
+  <img src="https://cdn.phototourl.com/free/2026-07-29-2d19d471-10cb-478b-8ca9-aebee7a4be42.jpg" alt="Banner Atas" class="w-full h-full object-cover">
+  
+  <!-- Overlay Lapisan Gelap + Teks di Tengah -->
+  <div class="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-white p-4">
+    <h1 class="text-3xl font-bold">Judul Banner Kamu</h1>
+    <p class="mt-2 text-sm">Deskripsi singkat atau kata sambutan di sini.</p>
+  </div>
+</header>
 
     <!-- 🎯 HEADER BANNER -->
     <div class="w-24 shadow-md overflow-hidden p-4 flex justify-center">
