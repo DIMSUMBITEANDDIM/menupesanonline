@@ -3,108 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Order Online - Bite & Dim</title>
+    <title>Menu Online - Bite & Dim</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        .post-title, .entry-title, h1.post-title, h1.entry-title,
-        #header-wrapper, .header-outer, #sidebar-wrapper, .sidebar-outer, 
-        #footer-wrapper, .footer-outer, .tabs-outer, .custom-sidebar { display: none !important; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen text-black pb-36 lg:pb-8">
 
-    <!-- 🎯 HEADER BANNER -->
-    <div class="w-full bg-amber-500 shadow-md overflow-hidden">
-        <img src="https://cdn.phototourl.com/free/2026-07-07-4497e897-0a15-456e-876f-86db9fe2a920.png" alt="Banner Bite & Dim" class="w-full h-auto object-cover block">
-    </div>
+<!-- pb-36 MEMBERIKAN SPASI BAWAH CUKUP BESAR AGAR MENU BAWAH TIDAK TERTUTUP FLOATING KERANJANG -->
+<body class="bg-gray-100 min-h-screen text-gray-900 pb-36">
 
-    <!-- 🍱 LAYOUT UTAMA -->
-    <div class="container mx-auto p-3 sm:p-5 grid grid-cols-1 lg:grid-cols-3 gap-5">
-        
-        <!-- SISI KIRI: DAFTAR KARTU MENU -->
-        <div class="lg:col-span-2 space-y-4">
-            <h2 class="text-lg font-black text-gray-800 flex items-center justify-between">
-                <span>🍽️ Pilih Kartu Menu Favoritmu:</span>
-                <!-- Indikator Auto Sync tiap 3 Detik -->
-                <span id="loading_status" class="text-xs text-amber-600 font-bold flex items-center gap-1">
-                    <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span> Live Sync Dapur
-                </span>
-            </h2>
-
-            <!-- KONTAINER KARTU MENU -->
-            <div id="kontainer_kartu_menu" class="space-y-4"></div>
-        </div>
-
-        <!-- SISI KANAN: KERANJANG BELANJA -->
-        <div class="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] border-t border-gray-200 z-40 rounded-t-2xl lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:bg-white lg:shadow-md lg:border lg:border-gray-200 lg:rounded-xl lg:h-fit lg:sticky lg:top-4">
-            <h2 class="text-base font-black mb-3 border-b pb-2 hidden lg:block text-black">🛒 Keranjang Belanja</h2>
-            
-            <div class="flex flex-col lg:block gap-2">
-                <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 space-y-2">
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-700 mb-0.5">Nama Anda <span class="text-red-500">*</span></label>
-                        <input type="text" id="pembeli_nama" placeholder="Masukkan nama pemesan" class="w-full border border-gray-300 p-2 rounded-lg text-xs font-semibold bg-white text-black focus:outline-amber-500">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-700 mb-0.5">Nomor HP/WA <span class="text-red-500">*</span></label>
-                        <input type="tel" id="pembeli_hp" placeholder="Contoh: 08123456789" class="w-full border border-gray-300 p-2 rounded-lg text-xs font-semibold bg-white text-black focus:outline-amber-500">
-                    </div>
-                </div>
-
-                <div id="elemen_keranjang" class="space-y-2 max-h-[160px] overflow-y-auto border-b pb-2 text-xs">
-                    <p class="text-gray-400 text-center text-xs py-2">Keranjang masih kosong, Bro.</p>
-                </div>
-
-                <div class="flex items-center justify-between lg:block mt-2 lg:mt-4">
-                    <div class="flex justify-between font-black text-sm lg:text-lg lg:mb-3 gap-2">
-                        <span class="text-gray-700 lg:text-black">Total:</span>
-                        <span id="total_belanja" class="text-amber-600 font-extrabold">Rp 0</span>
-                    </div>
-
-                    <button onclick="prosesOrderPelanggan()" class="w-1/2 lg:w-full bg-green-500 hover:bg-green-600 text-white font-black py-3 rounded-xl text-xs shadow-md cursor-pointer text-center flex items-center justify-center gap-2 transition active:scale-95">
-                        ✅ SELESAIKAN PESANAN
-                    </button>
+    <!-- HEADER APLIKASI -->
+    <div class="bg-amber-500 text-white p-4 shadow-md sticky top-0 z-30">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🥟</span>
+                <div>
+                    <h1 class="font-black text-base leading-tight">BITE & DIM</h1>
+                    <p class="text-[10px] text-amber-100 font-bold">Pesan Dimsum & Tahu Bakso Online</p>
                 </div>
             </div>
+            <span id="stok_status" class="text-[10px] bg-amber-600 text-white px-2.5 py-1 rounded-full font-bold">Cek Stok...</span>
         </div>
     </div>
 
-    <!-- 📢 MODAL NOTIFIKASI PESANAN BERHASIL -->
-    <div id="modal_sukses" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl transform transition-all">
-            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold">
-                ✓
+    <!-- UTAMA: DAFTAR MENU -->
+    <div class="container mx-auto p-4 max-w-xl space-y-4 mt-2">
+        
+        <!-- BISA TAMBAH BANNER / INFO -->
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-xs text-amber-900 font-medium flex items-center gap-2">
+            <span>💡</span>
+            <span>Pilih menu kesukaanmu, isi data pemesan, lalu klik <b>Kirim Pesanan</b>!</span>
+        </div>
+
+        <!-- KONTAINER KARTU MENU (AKAN DIISI OTOMATIS OLEH JAVASCRIPT) -->
+        <div id="kontainer_menu" class="space-y-4"></div>
+
+        <!-- FORM DATA PELANGGAN -->
+        <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm space-y-3 mt-6">
+            <h3 class="font-black text-sm text-gray-800 border-b pb-2 flex items-center gap-1.5">
+                <span>📝</span> Data Pemesan
+            </h3>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Nama Lengkap *</label>
+                <input type="text" id="pembeli_nama" placeholder="Masukkan nama kamu" class="w-full border border-gray-300 p-2.5 rounded-xl text-xs font-semibold bg-gray-50 focus:bg-white focus:outline-amber-500">
             </div>
             <div>
-                <h3 class="text-lg font-black text-gray-900">Pesanan Berhasil Dibuat!</h3>
-                <p class="text-xs text-gray-500 mt-1">Terima kasih, pesanan Anda telah tersimpan otomatis ke dalam sistem kami.</p>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Nomor WhatsApp *</label>
+                <input type="tel" id="pembeli_hp" placeholder="Contoh: 081234567890" class="w-full border border-gray-300 p-2.5 rounded-xl text-xs font-semibold bg-gray-50 focus:bg-white focus:outline-amber-500">
             </div>
-            <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 text-left text-xs space-y-1">
-                <p><span class="font-bold text-gray-600">Pemesan:</span> <span id="modal_nama" class="font-semibold text-gray-900"></span></p>
-                <p><span class="font-bold text-gray-600">No. WA:</span> <span id="modal_hp" class="font-semibold text-gray-900"></span></p>
-                <p><span class="font-bold text-gray-600">Total Bayar:</span> <span id="modal_total" class="font-black text-amber-600"></span></p>
+        </div>
+
+    </div>
+
+    <!-- FLOATING BAR KERANJANG (MELAYANG DI BAWAH) -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 shadow-2xl z-40">
+        <div class="container mx-auto max-w-xl flex justify-between items-center gap-3">
+            <div>
+                <span class="text-[10px] font-bold text-gray-500 block">Total Pesanan:</span>
+                <span id="label_total_harga" class="font-black text-amber-600 text-base">Rp 0</span>
             </div>
-            <button onclick="tutupModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer transition active:scale-95">
-                OK, SIAP!
+            <button id="btn_kirim_pesanan" onclick="kirimPesananOnline()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3 rounded-xl shadow-lg transition active:scale-95 flex items-center gap-1.5">
+                <span>🚀</span> KIRIM PESANAN
             </button>
         </div>
     </div>
 
-    <!-- 🧠 SCRIPT LOGIKA APLIKASI -->
+    <!-- LOGIKA JAVASCRIPT -->
     <script>
+        // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT KAMU DI SINI:
         const urlWebApp = "https://script.google.com/macros/s/AKfycbxijavfFwCPC4BrH2-hYpZIN2tJuhfN4hmLo9eGRxKCkVnPGZXPF8CtXIqrzsNGUtOqmA/exec";
 
-        let keranjang = [];
-        let totalBelanja = 0;
-        let kartuTerbuka = {}; // Menyimpan status accordion (kartu mana yang sedang dibuka pengguna)
-
-        let stokDapurPcs = {
-            dimsum: 100,
-            tahu: 100
-        };
+        let keranjangPembeli = {};
+        let stokDapurPcs = { dimsum: 100, tahu: 100 };
 
         let daftarKartuMenu = [
             {
@@ -162,105 +134,66 @@
         ];
 
         window.onload = function() {
-            renderKartuMenu();
-            sinkronkanStokDariSheets();
-            
-            // 🔄 CEK & REFRESH STOK OTOMATIS TIAP 3 DETIK (3000 ms)
-            setInterval(sinkronkanStokDariSheets, 3000);
+            ambilStokLive();
+            renderMenu();
         };
 
-        function toggleKartu(idIsi, idPanah, indexKartu) {
-            const elIsi = document.getElementById(idIsi);
-            const elPanah = document.getElementById(idPanah);
-
-            if (elIsi.classList.contains("hidden")) {
-                elIsi.classList.remove("hidden");
-                elPanah.innerText = "▲";
-                kartuTerbuka[indexKartu] = true;
-            } else {
-                elIsi.classList.add("hidden");
-                elPanah.innerText = "▼";
-                kartuTerbuka[indexKartu] = false;
-            }
-        }
-
-        function sinkronkanStokDariSheets() {
+        function ambilStokLive() {
             fetch(urlWebApp)
                 .then(res => res.json())
                 .then(resData => {
                     if (resData) {
-                        let stokBaruDimsum = parseInt(resData.stokDimsumPcs || 0);
-                        let stokBaruTahu = parseInt(resData.stokTahuPcs || 0);
-
-                        // Update tampilan jika stok berubah
-                        if (stokBaruDimsum !== stokDapurPcs.dimsum || stokBaruTahu !== stokDapurPcs.tahu) {
-                            stokDapurPcs.dimsum = stokBaruDimsum;
-                            stokDapurPcs.tahu = stokBaruTahu;
-                            renderKartuMenu();
-                        }
+                        stokDapurPcs.dimsum = parseInt(resData.stokDimsumPcs || 0);
+                        stokDapurPcs.tahu = parseInt(resData.stokTahuPcs || 0);
+                        document.getElementById("stok_status").innerText = "Stok Terhubung";
+                        renderMenu();
                     }
                 })
-                .catch(err => console.log("Gagal sync live stok:", err));
+                .catch(e => {
+                    document.getElementById("stok_status").innerText = "Offline Mode";
+                });
         }
 
-        function renderKartuMenu() {
+        function renderMenu() {
             let html = "";
-
             daftarKartuMenu.forEach((kartu, indexKartu) => {
-                let idIsiKartu = `isi_kartu_${indexKartu}`;
-                let idPanahKartu = `panah_kartu_${indexKartu}`;
                 let sisaPcsBahan = stokDapurPcs[kartu.kategoriBahan] || 0;
-                
-                // Menjaga agar kartu yang sedang dibuka tidak sengaja tertutup saat direfresh
-                let isOpen = kartuTerbuka[indexKartu] === true;
 
                 html += `
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                        <button type="button" onclick="toggleKartu('${idIsiKartu}', '${idPanahKartu}', ${indexKartu})" class="w-full ${kartu.temaWarna} px-4 py-3 flex justify-between items-center cursor-pointer select-none text-left">
-                            <h3 class="font-black text-base tracking-wide">📦 ${kartu.namaKartu}</h3>
-                            <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-semibold bg-white/20 px-2 py-0.5 rounded-full">${kartu.items.length} pilihan</span>
-                                <span id="${idPanahKartu}" class="text-sm font-bold">${isOpen ? '▲' : '▼'}</span>
-                            </div>
-                        </button>
+                        <div class="${kartu.temaWarna} px-4 py-3 flex justify-between items-center">
+                            <h3 class="font-black text-sm tracking-wide">📦 ${kartu.namaKartu}</h3>
+                        </div>
 
-                        <div id="${idIsiKartu}" class="p-3 grid grid-cols-1 sm:grid-cols-2 gap-3 ${isOpen ? '' : 'hidden'} border-t border-gray-100">
+                        <div class="p-3 grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-gray-100">
                 `;
 
                 kartu.items.forEach((item, indexItem) => {
-                    let idInput = `qty_${indexKartu}_${indexItem}`;
-                    let namaLengkap = `${kartu.namaKartu} - ${item.nama}`;
+                    let keyItem = `${kartu.namaKartu} - ${item.nama}`;
                     let porsiMaksimal = Math.floor(sisaPcsBahan / item.isiPcs);
                     let stokReady = porsiMaksimal > 0;
+                    let currentQty = keranjangPembeli[keyItem]?.qty || 0;
 
                     html += `
-                        <div class="border border-gray-100 bg-gray-50/50 rounded-xl p-3 flex flex-col justify-between hover:border-amber-300 transition ${!stokReady ? 'opacity-60' : ''}">
+                        <div class="border border-gray-100 bg-gray-50/60 rounded-xl p-3 flex flex-col justify-between ${!stokReady ? 'opacity-50' : ''}">
                             <div>
-                                <div class="flex justify-between items-start gap-1">
-                                    <span class="font-extrabold text-xs text-gray-800 block">${item.nama}</span>
-                                    <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded shrink-0">${item.desc}</span>
+                                <div class="flex justify-between items-start">
+                                    <span class="font-extrabold text-xs text-gray-800">${item.nama}</span>
+                                    <span class="text-[9px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">${item.desc}</span>
                                 </div>
-                                <div class="mt-1 mb-2 flex justify-between items-center">
-                                    <span class="font-black text-sm text-amber-600">Rp ${item.harga.toLocaleString('id-ID')}</span>
-                                    <span class="text-[10px] font-bold ${stokReady ? 'text-gray-500' : 'text-red-500'}">Maks: ${porsiMaksimal} Porsi</span>
+                                <div class="mt-1 mb-2">
+                                    <span class="font-black text-xs text-amber-600">Rp ${item.harga.toLocaleString('id-ID')}</span>
                                 </div>
                             </div>
 
-                            <div class="space-y-2 mt-auto">
+                            <div class="mt-auto pt-2">
                                 ${stokReady ? `
-                                    <div class="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden h-8">
-                                        <button onclick="kurangQty('${idInput}')" type="button" class="px-3 h-full text-gray-700 font-black hover:bg-gray-100 text-xs cursor-pointer">-</button>
-                                        <input type="number" id="${idInput}" value="1" min="1" max="${porsiMaksimal}" readonly class="w-full text-center font-extrabold bg-white text-xs text-black border-none focus:outline-none">
-                                        <button onclick="tambahQty('${idInput}', ${porsiMaksimal})" type="button" class="px-3 h-full text-gray-700 font-black hover:bg-gray-100 text-xs cursor-pointer">+</button>
+                                    <div class="flex items-center justify-between bg-white border border-gray-300 rounded-lg h-8 px-1">
+                                        <button onclick="ubahQty('${keyItem}', ${item.harga}, -1, ${porsiMaksimal})" class="w-7 h-full font-black text-amber-600 active:scale-95 text-sm">-</button>
+                                        <span class="font-black text-xs text-gray-800">${currentQty}</span>
+                                        <button onclick="ubahQty('${keyItem}', ${item.harga}, 1, ${porsiMaksimal})" class="w-7 h-full font-black text-amber-600 active:scale-95 text-sm">+</button>
                                     </div>
-                                    <button onclick="tambahKeKeranjang('${namaLengkap}', ${item.harga}, '${idInput}', ${porsiMaksimal})" type="button" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black text-xs py-2 rounded-lg shadow-xs cursor-pointer transition active:scale-95">
-                                        + KERANJANG
-                                    </button>
-                                ` : `
-                                    <div class="w-full bg-red-100 text-red-700 font-black text-xs py-2.5 rounded-lg text-center border border-red-200 select-none">
-                                        🚫 STOK HABIS
-                                    </div>
-                                `}
+                                ` : `<div class="text-[10px] bg-red-100 text-red-600 font-bold py-1 text-center rounded">HABIS</div>`}
                             </div>
                         </div>
                     `;
@@ -268,135 +201,100 @@
 
                 html += `</div></div>`;
             });
-
-            document.getElementById("kontainer_kartu_menu").innerHTML = html;
+            document.getElementById("kontainer_menu").innerHTML = html;
         }
 
-        function tambahQty(id, maxStok) {
-            let el = document.getElementById(id);
-            let val = parseInt(el.value || 1);
-            if (val < maxStok) {
-                el.value = val + 1;
-            } else {
-                alert(`Berdasarkan stok pcs dapur, maksimal pemesanan hanya ${maxStok} porsi!`);
-            }
-        }
-
-        function kurangQty(id) {
-            let el = document.getElementById(id);
-            let val = parseInt(el.value || 1);
-            if (val > 1) el.value = val - 1;
-        }
-
-        function tambahKeKeranjang(namaItem, harga, idInput, maxStok) {
-            let qtyInput = parseInt(document.getElementById(idInput).value) || 1;
-            let idx = keranjang.findIndex(x => x.nama === namaItem);
-
-            let qtyDiKeranjangSaatIni = idx > -1 ? keranjang[idx].qty : 0;
-            let totalAkanDipesan = qtyDiKeranjangSaatIni + qtyInput;
-
-            if (totalAkanDipesan > maxStok) {
-                alert(`Gagal! Stok pcs dapur hanya mencukupi untuk ${maxStok} porsi paket ini.`);
-                return;
+        function ubahQty(keyItem, harga, delta, max) {
+            if (!keranjangPembeli[keyItem]) {
+                keranjangPembeli[keyItem] = { qty: 0, harga: harga };
             }
 
-            if (idx > -1) {
-                keranjang[idx].qty = totalAkanDipesan;
-            } else {
-                keranjang.push({ nama: namaItem, harga: harga, qty: qtyInput });
+            let currentQty = keranjangPembeli[keyItem].qty + delta;
+
+            if (currentQty < 0) currentQty = 0;
+            if (currentQty > max) {
+                alert(`Maaf, stok hanya cukup untuk ${max} porsi.`);
+                currentQty = max;
             }
 
-            document.getElementById(idInput).value = 1;
-            renderKeranjang();
-        }
-
-        function hapusDariKeranjang(index) {
-            keranjang.splice(index, 1);
-            renderKeranjang();
-        }
-
-        function renderKeranjang() {
-            let html = "";
-            totalBelanja = 0;
-
-            if (keranjang.length === 0) {
-                html = `<p class="text-gray-400 text-center text-xs py-2">Keranjang masih kosong, Bro.</p>`;
-            } else {
-                keranjang.forEach((item, index) => {
-                    let subtotal = item.qty * item.harga;
-                    totalBelanja += subtotal;
-
-                    html += `
-                        <div class="flex justify-between items-center text-xs border-b pb-1.5 pt-1">
-                            <div class="truncate max-w-[160px]">
-                                <span class="font-bold text-gray-800 block truncate">${item.nama}</span>
-                                <span class="text-[10px] text-gray-500">${item.qty} x Rp ${item.harga.toLocaleString('id-ID')}</span>
-                            </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <span class="font-extrabold text-gray-800">Rp ${subtotal.toLocaleString('id-ID')}</span>
-                                <button onclick="hapusDariKeranjang(${index})" class="text-red-500 hover:text-red-700 font-bold text-xs cursor-pointer">✕</button>
-                            </div>
-                        </div>
-                    `;
-                });
+            keranjangPembeli[keyItem].qty = currentQty;
+            if (keranjangPembeli[keyItem].qty === 0) {
+                delete keranjangPembeli[keyItem];
             }
 
-            document.getElementById("elemen_keranjang").innerHTML = html;
-            document.getElementById("total_belanja").innerText = "Rp " + totalBelanja.toLocaleString('id-ID');
+            hitungTotal();
+            renderMenu();
         }
 
-        function prosesOrderPelanggan() {
-            if (keranjang.length === 0) {
-                alert("Keranjang masih kosong, Bro!");
+        function hitungTotal() {
+            let total = 0;
+            Object.keys(keranjangPembeli).forEach(key => {
+                total += keranjangPembeli[key].qty * keranjangPembeli[key].harga;
+            });
+            document.getElementById("label_total_harga").innerText = "Rp " + total.toLocaleString('id-ID');
+            return total;
+        }
+
+        function kirimPesananOnline() {
+            let totalHarga = hitungTotal();
+            if (totalHarga === 0) {
+                alert("Silakan pilih minimal 1 menu sebelum mengirim pesanan!");
                 return;
             }
 
             let nama = document.getElementById("pembeli_nama").value.trim();
             let hp = document.getElementById("pembeli_hp").value.trim();
 
-            if (nama === "") {
-                alert("Mohon isi Nama Anda terlebih dahulu!");
+            if (!nama || !hp) {
+                alert("Harap isi Nama Lengkap dan Nomor WhatsApp kamu!");
                 return;
             }
 
-            if (hp === "") {
-                alert("Mohon isi Nomor HP/WA Anda terlebih dahulu!");
-                return;
-            }
+            let btn = document.getElementById("btn_kirim_pesanan");
+            btn.disabled = true;
+            btn.classList.add("opacity-50");
+            btn.innerHTML = "⏳ Sending...";
+
+            let itemsArray = Object.keys(keranjangPembeli).map(key => ({
+                produk: key,
+                qty: keranjangPembeli[key].qty,
+                subtotal: keranjangPembeli[key].qty * keranjangPembeli[key].harga
+            }));
 
             let payload = {
+                action: "onlineOrder",
                 namaPelanggan: nama,
                 nomorWA: hp,
-                items: keranjang.map(i => ({ 
-                    produk: i.nama, 
-                    qty: i.qty, 
-                    subtotal: i.qty * i.harga 
-                }))
+                items: itemsArray
             };
-            
-            fetch(urlWebApp, { 
-                method: "POST", 
-                headers: { "Content-Type": "text/plain" }, 
-                body: JSON.stringify(payload) 
-            }).then(() => {
-                // Refresh stok langsung setelah order berhasil
-                sinkronkanStokDariSheets();
-            }).catch(e => console.log("Gagal kirim data:", e));
 
-            document.getElementById("modal_nama").innerText = nama;
-            document.getElementById("modal_hp").innerText = hp;
-            document.getElementById("modal_total").innerText = "Rp " + totalBelanja.toLocaleString('id-ID');
-
-            document.getElementById("modal_sukses").classList.remove("hidden");
-
-            keranjang = [];
-            renderKeranjang();
-            document.getElementById("pembeli_nama").value = "";
-            document.getElementById("pembeli_hp").value = "";
-        }
-
-        function tutupModal() {
-            document.getElementById("modal_sukses").classList.add("hidden");
+            fetch(urlWebApp, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(resData => {
+                if (resData.status === "success") {
+                    alert(`🎉 Pesanan Berhasil Terkirim!\nID Pesanan: ${resData.idPesanan}\n\nSilakan tunggu konfirmasi kasir.`);
+                    keranjangPembeli = {};
+                    document.getElementById("pembeli_nama").value = "";
+                    document.getElementById("pembeli_hp").value = "";
+                    hitungTotal();
+                    renderMenu();
+                } else {
+                    alert("Gagal menginput pesanan: " + (resData.message || "Terjadi kesalahan"));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Gagal terhubung ke server. Pastikan koneksi internet stabil!");
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.classList.remove("opacity-50");
+                btn.innerHTML = "<span>🚀</span> KIRIM PESANAN";
+            });
         }
     </script>
 </body>
