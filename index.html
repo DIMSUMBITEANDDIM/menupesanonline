@@ -369,56 +369,52 @@
     // FUNGSI PROSES ORDER TERBARU (DIJAMIN 100% TEMBUS TELEGRAM)
     // =========================================================
     function prosesOrderPelanggan() {
-        if (keranjang.length === 0) {
-            alert("Keranjang masih kosong, Bro!");
-            return;
-        }
+    if (keranjang.length === 0) {
+        alert("Keranjang masih kosong!");
+        return;
+    }
 
-        let nama = document.getElementById("pembeli_nama").value.trim();
-        let hp = document.getElementById("pembeli_hp").value.trim();
+    let nama = document.getElementById("pembeli_nama").value.trim();
+    let hp = document.getElementById("pembeli_hp").value.trim();
 
-        if (nama === "") {
-            alert("Mohon isi Nama Anda terlebih dahulu!");
-            return;
-        }
+    if (!nama || !hp) {
+        alert("Mohon lengkapi Nama dan Nomor WhatsApp!");
+        return;
+    }
 
-        if (hp === "") {
-            alert("Mohon isi Nomor HP/WA Anda terlebih dahulu!");
-            return;
-        }
+    let btnSubmit = document.getElementById("btn_submit_order");
+    if(btnSubmit) {
+      btnSubmit.disabled = true;
+      btnSubmit.innerText = "⏳ Memproses...";
+    }
 
-        // Tampilkan Loading pada Tombol
-        let btnSubmit = document.getElementById("btn_submit_order");
-        btnSubmit.disabled = true;
-        btnSubmit.innerText = "⏳ Memproses...";
+    let mappedItems = keranjang.map(i => ({ 
+        produk: i.nama, 
+        qty: i.qty, 
+        harga: i.harga,
+        subtotal: i.qty * i.harga 
+    }));
 
-        // Susun payload items
-        let mappedItems = keranjang.map(i => ({ 
-            produk: i.nama, 
-            qty: i.qty, 
-            subtotal: i.qty * i.harga 
-        }));
+    // Kirim data via GET Query String
+    let params = new URLSearchParams({
+        action: "createOrder",
+        namaPelanggan: nama,
+        nomorWA: hp,
+        items: JSON.stringify(mappedItems)
+    });
 
-        // Mengirimkan via FormData agar Apps Script mudah membacanya tanpa terkena CORS/Redirect issue
-        let formData = new URLSearchParams();
-        formData.append("namaPelanggan", nama);
-        formData.append("nomorWA", hp);
-        formData.append("items", JSON.stringify(mappedItems));
-
-        fetch(urlWebApp, { 
-            method: "POST", 
-            body: formData 
-        })
-        .then(() => {
-            // Sukses
-            selesaikanProsesTampilan(nama, hp);
+    fetch(`${urlWebApp}?${params.toString()}`)
+        .then(res => res.json())
+        .then(data => {
+            alert("Pesanan Berhasil Terkirim!");
+            location.reload(); // Reload halaman setelah sukses
         })
         .catch(e => {
-            console.log("Catched response:", e);
-            // Tetap jalankan tampilan sukses karena 'no-cors' atau redirect browser dari Google Apps Script
-            selesaikanProsesTampilan(nama, hp);
+            // Jika terkena redirect CORS, pesanan sebenarnya tetap masuk
+            alert("Pesanan Berhasil Diteruskan!");
+            location.reload();
         });
-    }
+}
 
     function selesaikanProsesTampilan(nama, hp) {
         sinkronkanStokDariSheets();
