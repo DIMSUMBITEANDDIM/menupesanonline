@@ -127,7 +127,7 @@
     let keranjang = [];
     let totalBelanja = 0;
     
-    // Menyimpan indeks kartu yang sedang terbuka (null = semua tertutup)
+    // Menyimpan indeks kartu yang sedang terbuka
     let kartuTerbukaIndex = null;
 
     // Dapur terbagi 3 stok utama
@@ -182,15 +182,14 @@
             ]
         },
         {
-            namaKartu: "Dimsum Goreng",
+            namaKartu: "Paket Dimsum Goreng",
             kategoriBahan: "dimsumGoreng",
             temaWarna: "bg-red-600 text-white",
             items: [
-                { nama: "Dimsum Goreng Original", harga: 4000, desc: "Satuan", isiPcs: 1 },
-                { nama: "Dimsum Goreng Mentai", harga: 5000, desc: "Satuan", isiPcs: 1 },
-                { nama: "Dimsum Goreng Keju", harga: 5000, desc: "Satuan", isiPcs: 1 },
-                { nama: "Dimsum Goreng Mozarella", harga: 5000, desc: "Satuan", isiPcs: 1 },
-                { nama: "Paket Dimsum Goreng", harga: 15000, desc: "Isi 4 pcs", isiPcs: 4 }
+                { nama: "Dimsum Goreng Original", harga: 20000, desc: "Isi 4 pcs", isiPcs: 4 },
+                { nama: "Dimsum Goreng Mentai", harga: 20000, desc: "Isi 3 pcs", isiPcs: 3 },
+                { nama: "Dimsum Goreng Keju", harga: 20000, desc: "Isi 3 pcs", isiPcs: 3 },
+                { nama: "Dimsum Goreng Mozarella", harga: 22000, desc: "Isi 3 pcs", isiPcs: 3 }
             ]
         },
         {
@@ -201,6 +200,17 @@
                 { nama: "Box Kecil", harga: 10000, desc: "Isi 5 pcs", isiPcs: 5 },
                 { nama: "Box Besar", harga: 20000, desc: "Isi 10 pcs", isiPcs: 10 }
             ]
+        },
+        {
+            namaKartu: "Dimsum Goreng Satuan",
+            kategoriBahan: "dimsumGoreng",
+            temaWarna: "bg-rose-700 text-white",
+            items: [
+                { nama: "Dimsum Goreng Original", harga: 4000, desc: "Satuan", isiPcs: 1 },
+                { nama: "Dimsum Goreng Mentai", harga: 5000, desc: "Satuan", isiPcs: 1 },
+                { nama: "Dimsum Goreng Keju", harga: 5000, desc: "Satuan", isiPcs: 1 },
+                { nama: "Dimsum Goreng Mozarella", harga: 5000, desc: "Satuan", isiPcs: 1 }
+            ]
         }
     ];
 
@@ -210,13 +220,10 @@
         setInterval(sinkronkanStokDariSheets, 3000);
     };
 
-    // LOGIKA ACCORDION: Mengempiskan kartu lain jika ada kartu yang dibuka
     function toggleKartu(indexKartu) {
         if (kartuTerbukaIndex === indexKartu) {
-            // Jika kartu yang sama diklik lagi, kempiskan kartu tersebut
             kartuTerbukaIndex = null;
         } else {
-            // Buka kartu baru, otomatis mengempiskan kartu lainnya
             kartuTerbukaIndex = indexKartu;
         }
         renderKartuMenu();
