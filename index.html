@@ -126,11 +126,15 @@
 
     let keranjang = [];
     let totalBelanja = 0;
-    let kartuTerbuka = {};
+    
+    // Menyimpan indeks kartu yang sedang terbuka (null = semua tertutup)
+    let kartuTerbukaIndex = null;
 
+    // Dapur terbagi 3 stok utama
     let stokDapurPcs = {
         dimsum: 100,
-        tahu: 100
+        tahu: 100,
+        dimsumGoreng: 100
     };
 
     let daftarKartuMenu = [
@@ -178,12 +182,24 @@
             ]
         },
         {
+            namaKartu: "Dimsum Goreng",
+            kategoriBahan: "dimsumGoreng",
+            temaWarna: "bg-red-600 text-white",
+            items: [
+                { nama: "Dimsum Goreng Original", harga: 4000, desc: "Satuan", isiPcs: 1 },
+                { nama: "Dimsum Goreng Mentai", harga: 5000, desc: "Satuan", isiPcs: 1 },
+                { nama: "Dimsum Goreng Keju", harga: 5000, desc: "Satuan", isiPcs: 1 },
+                { nama: "Dimsum Goreng Mozarella", harga: 5000, desc: "Satuan", isiPcs: 1 },
+                { nama: "Paket Dimsum Goreng", harga: 15000, desc: "Isi 4 pcs", isiPcs: 4 }
+            ]
+        },
+        {
             namaKartu: "Tahu Bakso Goreng",
             kategoriBahan: "tahu",
             temaWarna: "bg-amber-800 text-white",
             items: [
-                { nama: "Box Kecil", harga: 10000, desc: "Isi 10 pcs", isiPcs: 5 },
-                { nama: "Box Besar", harga: 20000, desc: "Isi 20 pcs", isiPcs: 10 }
+                { nama: "Box Kecil", harga: 10000, desc: "Isi 5 pcs", isiPcs: 5 },
+                { nama: "Box Besar", harga: 20000, desc: "Isi 10 pcs", isiPcs: 10 }
             ]
         }
     ];
@@ -194,19 +210,16 @@
         setInterval(sinkronkanStokDariSheets, 3000);
     };
 
-    function toggleKartu(idIsi, idPanah, indexKartu) {
-        const elIsi = document.getElementById(idIsi);
-        const elPanah = document.getElementById(idPanah);
-
-        if (elIsi.classList.contains("hidden")) {
-            elIsi.classList.remove("hidden");
-            elPanah.innerText = "▲";
-            kartuTerbuka[indexKartu] = true;
+    // LOGIKA ACCORDION: Mengempiskan kartu lain jika ada kartu yang dibuka
+    function toggleKartu(indexKartu) {
+        if (kartuTerbukaIndex === indexKartu) {
+            // Jika kartu yang sama diklik lagi, kempiskan kartu tersebut
+            kartuTerbukaIndex = null;
         } else {
-            elIsi.classList.add("hidden");
-            elPanah.innerText = "▼";
-            kartuTerbuka[indexKartu] = false;
+            // Buka kartu baru, otomatis mengempiskan kartu lainnya
+            kartuTerbukaIndex = indexKartu;
         }
+        renderKartuMenu();
     }
 
     function sinkronkanStokDariSheets() {
@@ -216,10 +229,16 @@
                 if (resData) {
                     let stokBaruDimsum = parseInt(resData.stokDimsumPcs || 0);
                     let stokBaruTahu = parseInt(resData.stokTahuPcs || 0);
+                    let stokBaruGoreng = parseInt(resData.stokDimsumGorengPcs || 0);
 
-                    if (stokBaruDimsum !== stokDapurPcs.dimsum || stokBaruTahu !== stokDapurPcs.tahu) {
+                    if (stokBaruDimsum !== stokDapurPcs.dimsum || 
+                        stokBaruTahu !== stokDapurPcs.tahu || 
+                        stokBaruGoreng !== stokDapurPcs.dimsumGoreng) {
+                        
                         stokDapurPcs.dimsum = stokBaruDimsum;
                         stokDapurPcs.tahu = stokBaruTahu;
+                        stokDapurPcs.dimsumGoreng = stokBaruGoreng;
+                        
                         renderKartuMenu();
                     }
                 }
@@ -234,11 +253,11 @@
             let idIsiKartu = `isi_kartu_${indexKartu}`;
             let idPanahKartu = `panah_kartu_${indexKartu}`;
             let sisaPcsBahan = stokDapurPcs[kartu.kategoriBahan] || 0;
-            let isOpen = kartuTerbuka[indexKartu] === true;
+            let isOpen = kartuTerbukaIndex === indexKartu;
 
             html += `
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                    <button type="button" onclick="toggleKartu('${idIsiKartu}', '${idPanahKartu}', ${indexKartu})" class="w-full ${kartu.temaWarna} px-4 py-3 flex justify-between items-center cursor-pointer select-none text-left">
+                    <button type="button" onclick="toggleKartu(${indexKartu})" class="w-full ${kartu.temaWarna} px-4 py-3 flex justify-between items-center cursor-pointer select-none text-left">
                         <h3 class="font-black text-base tracking-wide">📦 ${kartu.namaKartu}</h3>
                         <div class="flex items-center gap-2">
                             <span class="text-[11px] font-semibold bg-white/20 px-2 py-0.5 rounded-full">${kartu.items.length} pilihan</span>
@@ -386,9 +405,8 @@
             return;
         }
 
-        // ==================== PERBAIKAN DI SINI ====================
         let payload = {
-            action: "onlineOrder", // Wajib dikirim agar Apps Script tahu ini dari Pesan Online
+            action: "onlineOrder",
             nama: nama,
             nomorWA: hp,
             items: keranjang.map(i => ({ 
@@ -405,7 +423,6 @@
         }).then(() => {
             sinkronkanStokDariSheets();
         }).catch(e => console.log("Gagal kirim data:", e));
-        // ============================================================
 
         document.getElementById("modal_nama").innerText = nama;
         document.getElementById("modal_hp").innerText = hp;
@@ -423,7 +440,6 @@
         document.getElementById("modal_sukses").classList.add("hidden");
     }
 
-    // Kode PWA Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
